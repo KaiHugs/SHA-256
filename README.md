@@ -89,7 +89,7 @@ Get it running on actual hardware. Need to make a top-level wrapper, synthesize 
 
 
 **Phase 6: Advanced Features**
-
+Looking to Implement with RISC-V architecture - might take a million years to implement. 
 
 
 ## Notes

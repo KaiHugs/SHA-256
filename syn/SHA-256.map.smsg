@@ -1,0 +1,1 @@
+Info (10281): Verilog HDL Declaration information at sha_double.sv(18): object "HASH1" differs only in case from object "hash1" in the same scope File: C:/Users/Kai/Documents/GitHub/SHA-256/src/sha_double.sv Line: 18

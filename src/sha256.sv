@@ -1,7 +1,7 @@
 //Author: Kai Hughes | 2025 
 //MAIN ALGORITHM
 
-module sha256_core (
+module sha256 (
     input  logic        clk,
     input  logic        rst_n,
     input  logic        start,          
@@ -55,7 +55,7 @@ module sha256_core (
     state_t state;
     logic [5:0] round_counter;  
 
-        logic [31:0] a, b, c, d, e, f, g, h;
+    logic [31:0] a, b, c, d, e, f, g, h;
     
     //hash states
     logic [31:0] H0, H1, H2, H3, H4, H5, H6, H7;
@@ -108,7 +108,7 @@ module sha256_core (
                         sigma0(W[(w_idx - 15) & 4'hF]) + 
                         W[w_idx]);
     
-    logic [31:0] T1, T2; //get computed every round TODO: might need diff/new one or adjusted logic 
+    logic [31:0] T1, T2;
     assign T1 = h + Sum1(e) + Ch(e, f, g) + K[round_counter] + W_current;
     assign T2 = Sum0(a) + Maj(a, b, c);
     
@@ -123,7 +123,9 @@ module sha256_core (
             {a, b, c, d, e, f, g, h} <= '0;
             {H0, H1, H2, H3, H4, H5, H6, H7} <= '0;
             
-            foreach (W[i]) W[i] <= '0;
+            for (int i = 0; i < 16; i = i + 1) begin
+                W[i] <= '0;
+            end
             
         end else begin
             case (state)
@@ -239,4 +241,4 @@ module sha256_core (
         end
     end
 
-endmodule  
+endmodule

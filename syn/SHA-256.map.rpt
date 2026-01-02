@@ -1,0 +1,614 @@
+Analysis & Synthesis report for SHA-256
+Thu Jan 01 18:29:33 2026
+Quartus Prime Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Analysis & Synthesis Summary
+  3. Analysis & Synthesis Settings
+  4. Parallel Compilation
+  5. Analysis & Synthesis Source Files Read
+  6. Analysis & Synthesis Resource Usage Summary
+  7. Analysis & Synthesis Resource Utilization by Entity
+  8. State Machine - |board_miner|bitcoin_miner:miner|state
+  9. State Machine - |board_miner|bitcoin_miner:miner|sha256:hasher|state
+ 10. Registers Removed During Synthesis
+ 11. General Register Statistics
+ 12. Inverted Register Statistics
+ 13. Multiplexer Restructuring Statistics (Restructuring Performed)
+ 14. Port Connectivity Checks: "bitcoin_miner:miner|sha256:hasher"
+ 15. Port Connectivity Checks: "bitcoin_miner:miner"
+ 16. Post-Synthesis Netlist Statistics for Top Partition
+ 17. Elapsed Time Per Partition
+ 18. Analysis & Synthesis Messages
+ 19. Analysis & Synthesis Suppressed Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 2019  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel FPGA IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Intel and sold by Intel or its authorized distributors.  Please
+refer to the applicable agreement for further details, at
+https://fpgasoftware.intel.com/eula.
+
+
+
++-------------------------------------------------------------------------------+
+; Analysis & Synthesis Summary                                                  ;
++---------------------------------+---------------------------------------------+
+; Analysis & Synthesis Status     ; Successful - Thu Jan 01 18:29:32 2026       ;
+; Quartus Prime Version           ; 19.1.0 Build 670 09/22/2019 SJ Lite Edition ;
+; Revision Name                   ; SHA-256                                     ;
+; Top-level Entity Name           ; board_miner                                 ;
+; Family                          ; Cyclone V                                   ;
+; Logic utilization (in ALMs)     ; N/A                                         ;
+; Total registers                 ; 1874                                        ;
+; Total pins                      ; 31                                          ;
+; Total virtual pins              ; 0                                           ;
+; Total block memory bits         ; 0                                           ;
+; Total DSP Blocks                ; 0                                           ;
+; Total HSSI RX PCSs              ; 0                                           ;
+; Total HSSI PMA RX Deserializers ; 0                                           ;
+; Total HSSI TX PCSs              ; 0                                           ;
+; Total HSSI PMA TX Serializers   ; 0                                           ;
+; Total PLLs                      ; 0                                           ;
+; Total DLLs                      ; 0                                           ;
++---------------------------------+---------------------------------------------+
+
+
++---------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Settings                                                                                             ;
++---------------------------------------------------------------------------------+--------------------+--------------------+
+; Option                                                                          ; Setting            ; Default Value      ;
++---------------------------------------------------------------------------------+--------------------+--------------------+
+; Device                                                                          ; 5CGXFC7C7F23C8     ;                    ;
+; Top-level entity name                                                           ; board_miner        ; SHA-256            ;
+; Family name                                                                     ; Cyclone V          ; Cyclone V          ;
+; Use smart compilation                                                           ; Off                ; Off                ;
+; Enable parallel Assembler and Timing Analyzer during compilation                ; On                 ; On                 ;
+; Enable compact report table                                                     ; Off                ; Off                ;
+; Restructure Multiplexers                                                        ; Auto               ; Auto               ;
+; MLAB Add Timing Constraints For Mixed-Port Feed-Through Mode Setting Don't Care ; Off                ; Off                ;
+; Create Debugging Nodes for IP Cores                                             ; Off                ; Off                ;
+; Preserve fewer node names                                                       ; On                 ; On                 ;
+; Intel FPGA IP Evaluation Mode                                                   ; Enable             ; Enable             ;
+; Verilog Version                                                                 ; Verilog_2001       ; Verilog_2001       ;
+; VHDL Version                                                                    ; VHDL_1993          ; VHDL_1993          ;
+; State Machine Processing                                                        ; Auto               ; Auto               ;
+; Safe State Machine                                                              ; Off                ; Off                ;
+; Extract Verilog State Machines                                                  ; On                 ; On                 ;
+; Extract VHDL State Machines                                                     ; On                 ; On                 ;
+; Ignore Verilog initial constructs                                               ; Off                ; Off                ;
+; Iteration limit for constant Verilog loops                                      ; 5000               ; 5000               ;
+; Iteration limit for non-constant Verilog loops                                  ; 250                ; 250                ;
+; Add Pass-Through Logic to Inferred RAMs                                         ; On                 ; On                 ;
+; Infer RAMs from Raw Logic                                                       ; On                 ; On                 ;
+; Parallel Synthesis                                                              ; On                 ; On                 ;
+; DSP Block Balancing                                                             ; Auto               ; Auto               ;
+; NOT Gate Push-Back                                                              ; On                 ; On                 ;
+; Power-Up Don't Care                                                             ; On                 ; On                 ;
+; Remove Redundant Logic Cells                                                    ; Off                ; Off                ;
+; Remove Duplicate Registers                                                      ; On                 ; On                 ;
+; Ignore CARRY Buffers                                                            ; Off                ; Off                ;
+; Ignore CASCADE Buffers                                                          ; Off                ; Off                ;
+; Ignore GLOBAL Buffers                                                           ; Off                ; Off                ;
+; Ignore ROW GLOBAL Buffers                                                       ; Off                ; Off                ;
+; Ignore LCELL Buffers                                                            ; Off                ; Off                ;
+; Ignore SOFT Buffers                                                             ; On                 ; On                 ;
+; Limit AHDL Integers to 32 Bits                                                  ; Off                ; Off                ;
+; Optimization Technique                                                          ; Balanced           ; Balanced           ;
+; Carry Chain Length                                                              ; 70                 ; 70                 ;
+; Auto Carry Chains                                                               ; On                 ; On                 ;
+; Auto Open-Drain Pins                                                            ; On                 ; On                 ;
+; Perform WYSIWYG Primitive Resynthesis                                           ; Off                ; Off                ;
+; Auto ROM Replacement                                                            ; On                 ; On                 ;
+; Auto RAM Replacement                                                            ; On                 ; On                 ;
+; Auto DSP Block Replacement                                                      ; On                 ; On                 ;
+; Auto Shift Register Replacement                                                 ; Auto               ; Auto               ;
+; Allow Shift Register Merging across Hierarchies                                 ; Auto               ; Auto               ;
+; Auto Clock Enable Replacement                                                   ; On                 ; On                 ;
+; Strict RAM Replacement                                                          ; Off                ; Off                ;
+; Allow Synchronous Control Signals                                               ; On                 ; On                 ;
+; Force Use of Synchronous Clear Signals                                          ; Off                ; Off                ;
+; Auto Resource Sharing                                                           ; Off                ; Off                ;
+; Allow Any RAM Size For Recognition                                              ; Off                ; Off                ;
+; Allow Any ROM Size For Recognition                                              ; Off                ; Off                ;
+; Allow Any Shift Register Size For Recognition                                   ; Off                ; Off                ;
+; Use LogicLock Constraints during Resource Balancing                             ; On                 ; On                 ;
+; Ignore translate_off and synthesis_off directives                               ; Off                ; Off                ;
+; Timing-Driven Synthesis                                                         ; On                 ; On                 ;
+; Report Parameter Settings                                                       ; On                 ; On                 ;
+; Report Source Assignments                                                       ; On                 ; On                 ;
+; Report Connectivity Checks                                                      ; On                 ; On                 ;
+; Ignore Maximum Fan-Out Assignments                                              ; Off                ; Off                ;
+; Synchronization Register Chain Length                                           ; 3                  ; 3                  ;
+; Power Optimization During Synthesis                                             ; Normal compilation ; Normal compilation ;
+; HDL message level                                                               ; Level2             ; Level2             ;
+; Suppress Register Optimization Related Messages                                 ; Off                ; Off                ;
+; Number of Removed Registers Reported in Synthesis Report                        ; 5000               ; 5000               ;
+; Number of Swept Nodes Reported in Synthesis Report                              ; 5000               ; 5000               ;
+; Number of Inverted Registers Reported in Synthesis Report                       ; 100                ; 100                ;
+; Clock MUX Protection                                                            ; On                 ; On                 ;
+; Auto Gated Clock Conversion                                                     ; Off                ; Off                ;
+; Block Design Naming                                                             ; Auto               ; Auto               ;
+; SDC constraint protection                                                       ; Off                ; Off                ;
+; Synthesis Effort                                                                ; Auto               ; Auto               ;
+; Shift Register Replacement - Allow Asynchronous Clear Signal                    ; On                 ; On                 ;
+; Pre-Mapping Resynthesis Optimization                                            ; Off                ; Off                ;
+; Analysis & Synthesis Message Level                                              ; Medium             ; Medium             ;
+; Disable Register Merging Across Hierarchies                                     ; Auto               ; Auto               ;
+; Resource Aware Inference For Block RAM                                          ; On                 ; On                 ;
+; Automatic Parallel Synthesis                                                    ; On                 ; On                 ;
+; Partial Reconfiguration Bitstream ID                                            ; Off                ; Off                ;
++---------------------------------------------------------------------------------+--------------------+--------------------+
+
+
++------------------------------------------+
+; Parallel Compilation                     ;
++----------------------------+-------------+
+; Processors                 ; Number      ;
++----------------------------+-------------+
+; Number detected on machine ; 16          ;
+; Maximum allowed            ; 16          ;
+;                            ;             ;
+; Average used               ; 1.01        ;
+; Maximum used               ; 16          ;
+;                            ;             ;
+; Usage by Processor         ; % Time Used ;
+;     Processor 1            ; 100.0%      ;
+;     Processor 2            ;   0.1%      ;
+;     Processor 3            ;   0.1%      ;
+;     Processor 4            ;   0.1%      ;
+;     Processor 5            ;   0.0%      ;
+;     Processor 6            ;   0.0%      ;
+;     Processor 7            ;   0.0%      ;
+;     Processor 8            ;   0.0%      ;
+;     Processors 9-16        ;   0.0%      ;
++----------------------------+-------------+
+
+
++----------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Source Files Read                                                                                                                   ;
++----------------------------------+-----------------+------------------------------+------------------------------------------------------------+---------+
+; File Name with User-Entered Path ; Used in Netlist ; File Type                    ; File Name with Absolute Path                               ; Library ;
++----------------------------------+-----------------+------------------------------+------------------------------------------------------------+---------+
+; ../src/sha256.sv                 ; yes             ; User SystemVerilog HDL File  ; C:/Users/Kai/Documents/GitHub/SHA-256/src/sha256.sv        ;         ;
+; ../src/bitcoin_miner.sv          ; yes             ; User SystemVerilog HDL File  ; C:/Users/Kai/Documents/GitHub/SHA-256/src/bitcoin_miner.sv ;         ;
+; ../src/board_miner.sv            ; yes             ; User SystemVerilog HDL File  ; C:/Users/Kai/Documents/GitHub/SHA-256/src/board_miner.sv   ;         ;
++----------------------------------+-----------------+------------------------------+------------------------------------------------------------+---------+
+
+
++--------------------------------------------------------------+
+; Analysis & Synthesis Resource Usage Summary                  ;
++---------------------------------------------+----------------+
+; Resource                                    ; Usage          ;
++---------------------------------------------+----------------+
+; Estimate of Logic utilization (ALMs needed) ; 1786           ;
+;                                             ;                ;
+; Combinational ALUT usage for logic          ; 2512           ;
+;     -- 7 input functions                    ; 31             ;
+;     -- 6 input functions                    ; 270            ;
+;     -- 5 input functions                    ; 200            ;
+;     -- 4 input functions                    ; 357            ;
+;     -- <=3 input functions                  ; 1654           ;
+;                                             ;                ;
+; Dedicated logic registers                   ; 1874           ;
+;                                             ;                ;
+; I/O pins                                    ; 31             ;
+;                                             ;                ;
+; Total DSP Blocks                            ; 0              ;
+;                                             ;                ;
+; Maximum fan-out node                        ; CLOCK_50~input ;
+; Maximum fan-out                             ; 1874           ;
+; Total fan-out                               ; 18626          ;
+; Average fan-out                             ; 4.19           ;
++---------------------------------------------+----------------+
+
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                                                 ;
++----------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+------------------------------------------------+---------------+--------------+
+; Compilation Hierarchy Node ; Combinational ALUTs ; Dedicated Logic Registers ; Block Memory Bits ; DSP Blocks ; Pins ; Virtual Pins ; Full Hierarchy Name                            ; Entity Name   ; Library Name ;
++----------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+------------------------------------------------+---------------+--------------+
+; |board_miner               ; 2512 (10)           ; 1874 (4)                  ; 0                 ; 0          ; 31   ; 0            ; |board_miner                                   ; board_miner   ; work         ;
+;    |bitcoin_miner:miner|   ; 2502 (729)          ; 1870 (578)                ; 0                 ; 0          ; 0    ; 0            ; |board_miner|bitcoin_miner:miner               ; bitcoin_miner ; work         ;
+;       |sha256:hasher|      ; 1773 (1773)         ; 1292 (1292)               ; 0                 ; 0          ; 0    ; 0            ; |board_miner|bitcoin_miner:miner|sha256:hasher ; sha256        ; work         ;
++----------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+------------------------------------------------+---------------+--------------+
+Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
+
+
+Encoding Type:  One-Hot
++---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; State Machine - |board_miner|bitcoin_miner:miner|state                                                                                                        ;
++-----------------------+-----------------------+-------------------+-----------------+-------------+------------+--------------------+------------+------------+
+; Name                  ; state.EXHAUSTED_STATE ; state.FOUND_STATE ; state.INCREMENT ; state.CHECK ; state.HASH ; state.BUILD_BLOCKS ; state.LOAD ; state.IDLE ;
++-----------------------+-----------------------+-------------------+-----------------+-------------+------------+--------------------+------------+------------+
+; state.IDLE            ; 0                     ; 0                 ; 0               ; 0           ; 0          ; 0                  ; 0          ; 0          ;
+; state.LOAD            ; 0                     ; 0                 ; 0               ; 0           ; 0          ; 0                  ; 1          ; 1          ;
+; state.BUILD_BLOCKS    ; 0                     ; 0                 ; 0               ; 0           ; 0          ; 1                  ; 0          ; 1          ;
+; state.HASH            ; 0                     ; 0                 ; 0               ; 0           ; 1          ; 0                  ; 0          ; 1          ;
+; state.CHECK           ; 0                     ; 0                 ; 0               ; 1           ; 0          ; 0                  ; 0          ; 1          ;
+; state.INCREMENT       ; 0                     ; 0                 ; 1               ; 0           ; 0          ; 0                  ; 0          ; 1          ;
+; state.FOUND_STATE     ; 0                     ; 1                 ; 0               ; 0           ; 0          ; 0                  ; 0          ; 1          ;
+; state.EXHAUSTED_STATE ; 1                     ; 0                 ; 0               ; 0           ; 0          ; 0                  ; 0          ; 1          ;
++-----------------------+-----------------------+-------------------+-----------------+-------------+------------+--------------------+------------+------------+
+
+
+Encoding Type:  One-Hot
++-------------------------------------------------------------------------------------------+
+; State Machine - |board_miner|bitcoin_miner:miner|sha256:hasher|state                      ;
++------------------+-------------+-------------+------------+------------+------------------+
+; Name             ; state.FINAL ; state.ROUND ; state.INIT ; state.IDLE ; state.DONE_STATE ;
++------------------+-------------+-------------+------------+------------+------------------+
+; state.IDLE       ; 0           ; 0           ; 0          ; 0          ; 0                ;
+; state.INIT       ; 0           ; 0           ; 1          ; 1          ; 0                ;
+; state.ROUND      ; 0           ; 1           ; 0          ; 1          ; 0                ;
+; state.FINAL      ; 1           ; 0           ; 0          ; 1          ; 0                ;
+; state.DONE_STATE ; 0           ; 0           ; 0          ; 1          ; 1                ;
++------------------+-------------+-------------+------------+------------+------------------+
+
+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Registers Removed During Synthesis                                                                                                                                                                                                                                                                                                                                                                          ;
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------+
+; Register name                                                                                                                                                                                                                                                                                                                                        ; Reason for Removal                                   ;
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------+
+; bitcoin_miner:miner|hasher_block_in[8]                                                                                                                                                                                                                                                                                                               ; Merged with bitcoin_miner:miner|hasher_block_in[255] ;
+; bitcoin_miner:miner|hasher_block_in[2,4,6,10,14,21,22,24,26,30..32,34,35,38,39,41..43,45,47,48,50,52..54,56..58,60..62,66..69,74,77..82,84,85,95,97..100,103,108..110,112,115,119,120,123,127,128,134..137,140,142,143,147..149,152,154,159,160,162,163,166,168,170,171,173..175,178,183,184,186,191,193,201,204,210..212,214,218,222..254]          ; Merged with bitcoin_miner:miner|hasher_block_in[0]   ;
+; bitcoin_miner:miner|hasher_block_in[1,3,5,11..13,15..20,23,25,27..29,33,36,37,40,44,46,49,51,55,59,63..65,70..73,75,76,83,86..94,96,102,104..107,111,113,114,116..118,121,122,124..126,129..133,138,139,141,144..146,150,151,153,155..158,161,164,165,167,169,172,176,177,179..182,185,187..190,192,194..200,202,203,205..209,213,215..217,219..221] ; Merged with bitcoin_miner:miner|hasher_block_in[101] ;
+; bitcoin_miner:miner|hasher_block_in[0]                                                                                                                                                                                                                                                                                                               ; Stuck at GND due to stuck port data_in               ;
+; bitcoin_miner:miner|state~12                                                                                                                                                                                                                                                                                                                         ; Lost fanout                                          ;
+; bitcoin_miner:miner|state~13                                                                                                                                                                                                                                                                                                                         ; Lost fanout                                          ;
+; bitcoin_miner:miner|state~14                                                                                                                                                                                                                                                                                                                         ; Lost fanout                                          ;
+; bitcoin_miner:miner|sha256:hasher|state~9                                                                                                                                                                                                                                                                                                            ; Lost fanout                                          ;
+; bitcoin_miner:miner|sha256:hasher|state~10                                                                                                                                                                                                                                                                                                           ; Lost fanout                                          ;
+; Total Number of Removed Registers = 257                                                                                                                                                                                                                                                                                                              ;                                                      ;
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------+
+
+
++------------------------------------------------------+
+; General Register Statistics                          ;
++----------------------------------------------+-------+
+; Statistic                                    ; Value ;
++----------------------------------------------+-------+
+; Total registers                              ; 1874  ;
+; Number of registers using Synchronous Clear  ; 37    ;
+; Number of registers using Synchronous Load   ; 1251  ;
+; Number of registers using Asynchronous Clear ; 1872  ;
+; Number of registers using Asynchronous Load  ; 0     ;
+; Number of registers using Clock Enable       ; 1619  ;
+; Number of registers using Preset             ; 0     ;
++----------------------------------------------+-------+
+
+
++--------------------------------------------------+
+; Inverted Register Statistics                     ;
++----------------------------------------+---------+
+; Inverted Register                      ; Fan out ;
++----------------------------------------+---------+
+; bitcoin_miner:miner|hasher_init_hash   ; 257     ;
+; Total number of inverted registers = 1 ;         ;
++----------------------------------------+---------+
+
+
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                                         ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------------------------------------+
+; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                               ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------------------------------------+
+; 3:1                ; 256 bits  ; 512 LEs       ; 0 LEs                ; 512 LEs                ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|h[3]      ;
+; 3:1                ; 256 bits  ; 512 LEs       ; 0 LEs                ; 512 LEs                ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|H3[16]    ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[0][10]  ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[1][27]  ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[2][6]   ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[3][0]   ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[4][3]   ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[5][4]   ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[6][12]  ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[7][30]  ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[8][0]   ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[9][4]   ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[10][12] ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[11][8]  ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[12][25] ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[13][13] ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[14][25] ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|sha256:hasher|W[15][27] ;
+; 7:1                ; 32 bits   ; 128 LEs       ; 64 LEs               ; 64 LEs                 ; Yes        ; |board_miner|bitcoin_miner:miner|hasher_block_in[483]    ;
+; 5:1                ; 2 bits    ; 6 LEs         ; 4 LEs                ; 2 LEs                  ; No         ; |board_miner|bitcoin_miner:miner|hasher_block_in         ;
+; 5:1                ; 224 bits  ; 672 LEs       ; 448 LEs              ; 224 LEs                ; No         ; |board_miner|bitcoin_miner:miner|hasher_block_in         ;
+; 8:1                ; 32 bits   ; 160 LEs       ; 160 LEs              ; 0 LEs                  ; No         ; |board_miner|bitcoin_miner:miner|sha256:hasher|Mux105    ;
+; 8:1                ; 32 bits   ; 160 LEs       ; 160 LEs              ; 0 LEs                  ; No         ; |board_miner|bitcoin_miner:miner|sha256:hasher|Mux1      ;
+; 8:1                ; 32 bits   ; 160 LEs       ; 160 LEs              ; 0 LEs                  ; No         ; |board_miner|bitcoin_miner:miner|sha256:hasher|Mux69     ;
+; 8:1                ; 32 bits   ; 160 LEs       ; 160 LEs              ; 0 LEs                  ; No         ; |board_miner|bitcoin_miner:miner|sha256:hasher|Mux48     ;
+; 6:1                ; 2 bits    ; 8 LEs         ; 4 LEs                ; 4 LEs                  ; No         ; |board_miner|bitcoin_miner:miner|Selector8               ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------------------------------------+
+
+
++----------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "bitcoin_miner:miner|sha256:hasher"                                                  ;
++------+--------+----------+-------------------------------------------------------------------------------------+
+; Port ; Type   ; Severity ; Details                                                                             ;
++------+--------+----------+-------------------------------------------------------------------------------------+
+; busy ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++------+--------+----------+-------------------------------------------------------------------------------------+
+
+
++-------------------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "bitcoin_miner:miner"                                                                                     ;
++---------------------------+--------+----------+-------------------------------------------------------------------------------------+
+; Port                      ; Type   ; Severity ; Details                                                                             ;
++---------------------------+--------+----------+-------------------------------------------------------------------------------------+
+; header_template[349..347] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[345..343] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[337..333] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[331..330] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[328..322] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[318..315] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[310..307] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[305..304] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[293..292] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[286..283] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[279..278] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[274..272] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[267..266] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[261..257] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[254..252] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[250..249] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[246..244] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[242..241] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[235..232] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[230..229] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[222..214] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[204..203] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[201..198] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[193..191] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[165..164] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[157..155] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[148..143] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[141..139] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[121..120] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[116..113] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[108..105] ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[88..87]   ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[81..80]   ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[76..72]   ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[64..48]   ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[36..34]   ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[639..633] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[631..350] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[340..338] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[312..311] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[303..301] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[299..298] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[291..290] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[288..287] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[277..275] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[271..270] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[265..262] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[256..255] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[248..247] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[238..236] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[228..225] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[213..212] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[210..205] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[197..194] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[190..188] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[186..184] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[182..180] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[176..175] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[171..169] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[167..166] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[163..162] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[160..158] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[150..149] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[138..136] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[128..127] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[125..124] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[119..117] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[112..111] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[104..103] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[101..100] ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[96..94]   ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[90..89]   ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[69..68]   ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[66..65]   ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[47..37]   ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[31..0]    ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[632]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[346]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[342]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[341]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[332]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[329]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[321]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[320]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[319]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[314]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[313]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[306]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[300]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[297]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[296]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[295]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[294]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[289]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[282]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[281]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[280]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[269]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[268]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[251]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[243]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[240]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[239]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[231]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[224]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[223]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[211]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[202]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[187]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[183]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[179]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[178]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[177]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[174]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[173]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[172]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[168]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[161]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[154]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[153]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[152]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[151]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[142]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[135]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[134]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[133]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[132]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[131]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[130]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[129]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[126]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[123]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[122]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[110]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[109]      ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[102]      ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[99]       ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[98]       ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[97]       ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[93]       ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[92]       ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[91]       ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[86]       ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[85]       ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[84]       ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[83]       ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[82]       ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[79]       ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[78]       ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[77]       ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[71]       ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[70]       ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[67]       ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; header_template[33]       ; Input  ; Info     ; Stuck at GND                                                                        ;
+; header_template[32]       ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; max_nonce[31..22]         ; Input  ; Info     ; Stuck at GND                                                                        ;
+; max_nonce[15..0]          ; Input  ; Info     ; Stuck at GND                                                                        ;
+; nonce_out[31..7]          ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; hash_out[255..8]          ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++---------------------------+--------+----------+-------------------------------------------------------------------------------------+
+
+
++-----------------------------------------------------+
+; Post-Synthesis Netlist Statistics for Top Partition ;
++-----------------------+-----------------------------+
+; Type                  ; Count                       ;
++-----------------------+-----------------------------+
+; arriav_ff             ; 1874                        ;
+;     CLR               ; 25                          ;
+;     CLR SCLR          ; 1                           ;
+;     CLR SLD           ; 227                         ;
+;     ENA CLR           ; 559                         ;
+;     ENA CLR SCLR      ; 36                          ;
+;     ENA CLR SLD       ; 1024                        ;
+;     plain             ; 2                           ;
+; arriav_lcell_comb     ; 2512                        ;
+;     arith             ; 352                         ;
+;         1 data inputs ; 32                          ;
+;         2 data inputs ; 318                         ;
+;         5 data inputs ; 2                           ;
+;     extend            ; 31                          ;
+;         7 data inputs ; 31                          ;
+;     normal            ; 2001                        ;
+;         0 data inputs ; 1                           ;
+;         1 data inputs ; 1                           ;
+;         2 data inputs ; 506                         ;
+;         3 data inputs ; 668                         ;
+;         4 data inputs ; 357                         ;
+;         5 data inputs ; 198                         ;
+;         6 data inputs ; 270                         ;
+;     shared            ; 128                         ;
+;         3 data inputs ; 128                         ;
+; boundary_port         ; 31                          ;
+;                       ;                             ;
+; Max LUT depth         ; 17.00                       ;
+; Average LUT depth     ; 6.35                        ;
++-----------------------+-----------------------------+
+
+
++-------------------------------+
+; Elapsed Time Per Partition    ;
++----------------+--------------+
+; Partition Name ; Elapsed Time ;
++----------------+--------------+
+; Top            ; 00:00:06     ;
++----------------+--------------+
+
+
++-------------------------------+
+; Analysis & Synthesis Messages ;
++-------------------------------+
+Info: *******************************************************************
+Info: Running Quartus Prime Analysis & Synthesis
+    Info: Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
+    Info: Processing started: Thu Jan 01 18:29:14 2026
+Info: Command: quartus_map --read_settings_files=on --write_settings_files=off SHA-256 -c SHA-256
+Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
+Info (20030): Parallel compilation is enabled and will use 16 of the 16 processors detected
+Info (12021): Found 1 design units, including 1 entities, in source file /users/kai/documents/github/sha-256/src/sha256.sv
+    Info (12023): Found entity 1: sha256 File: C:/Users/Kai/Documents/GitHub/SHA-256/src/sha256.sv Line: 4
+Info (12021): Found 1 design units, including 1 entities, in source file /users/kai/documents/github/sha-256/src/sha_double.sv
+    Info (12023): Found entity 1: sha256_double File: C:/Users/Kai/Documents/GitHub/SHA-256/src/sha_double.sv Line: 4
+Info (12021): Found 1 design units, including 1 entities, in source file /users/kai/documents/github/sha-256/src/bitcoin_miner.sv
+    Info (12023): Found entity 1: bitcoin_miner File: C:/Users/Kai/Documents/GitHub/SHA-256/src/bitcoin_miner.sv Line: 4
+Info (12021): Found 1 design units, including 1 entities, in source file /users/kai/documents/github/sha-256/src/board_miner.sv
+    Info (12023): Found entity 1: board_miner File: C:/Users/Kai/Documents/GitHub/SHA-256/src/board_miner.sv Line: 4
+Info (12127): Elaborating entity "board_miner" for the top level hierarchy
+Info (12128): Elaborating entity "bitcoin_miner" for hierarchy "bitcoin_miner:miner" File: C:/Users/Kai/Documents/GitHub/SHA-256/src/board_miner.sv Line: 28
+Warning (10036): Verilog HDL or VHDL warning at bitcoin_miner.sv(60): object "hash_after_block0" assigned a value but never read File: C:/Users/Kai/Documents/GitHub/SHA-256/src/bitcoin_miner.sv Line: 60
+Warning (10036): Verilog HDL or VHDL warning at bitcoin_miner.sv(61): object "hash_after_block1" assigned a value but never read File: C:/Users/Kai/Documents/GitHub/SHA-256/src/bitcoin_miner.sv Line: 61
+Info (12128): Elaborating entity "sha256" for hierarchy "bitcoin_miner:miner|sha256:hasher" File: C:/Users/Kai/Documents/GitHub/SHA-256/src/bitcoin_miner.sv Line: 56
+Warning (10030): Net "K.data_a" at sha256.sv(27) has no driver or initial value, using a default initial value '0' File: C:/Users/Kai/Documents/GitHub/SHA-256/src/sha256.sv Line: 27
+Warning (10030): Net "K.waddr_a" at sha256.sv(27) has no driver or initial value, using a default initial value '0' File: C:/Users/Kai/Documents/GitHub/SHA-256/src/sha256.sv Line: 27
+Warning (10030): Net "K.we_a" at sha256.sv(27) has no driver or initial value, using a default initial value '0' File: C:/Users/Kai/Documents/GitHub/SHA-256/src/sha256.sv Line: 27
+Info (276014): Found 1 instances of uninferred RAM logic
+    Info (276004): RAM logic "bitcoin_miner:miner|sha256:hasher|K" is uninferred due to inappropriate RAM size File: C:/Users/Kai/Documents/GitHub/SHA-256/src/sha256.sv Line: 27
+Info (286030): Timing-Driven Synthesis is running
+Info (17049): 5 registers lost all their fanouts during netlist optimizations.
+Info (144001): Generated suppressed messages file C:/Users/Kai/Documents/GitHub/SHA-256/syn/SHA-256.map.smsg
+Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
+    Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
+Info (21057): Implemented 3777 device resources after synthesis - the final resource count might be different
+    Info (21058): Implemented 13 input pins
+    Info (21059): Implemented 18 output pins
+    Info (21061): Implemented 3746 logic cells
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 6 warnings
+    Info: Peak virtual memory: 4938 megabytes
+    Info: Processing ended: Thu Jan 01 18:29:33 2026
+    Info: Elapsed time: 00:00:19
+    Info: Total CPU time (on all processors): 00:00:37
+
+
++------------------------------------------+
+; Analysis & Synthesis Suppressed Messages ;
++------------------------------------------+
+The suppressed messages can be found in C:/Users/Kai/Documents/GitHub/SHA-256/syn/SHA-256.map.smsg.
+
+

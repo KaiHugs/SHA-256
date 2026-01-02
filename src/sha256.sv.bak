@@ -1,0 +1,244 @@
+//Author: Kai Hughes | 2025 
+//MAIN ALGORITHM
+
+module sha256_core (
+    input  logic        clk,
+    input  logic        rst_n,
+    input  logic        start,          
+    input  logic [511:0] block_in,      // message block
+    input  logic [255:0] hash_in,       // previous hash for chaining
+    input  logic        init_hash,      // 1 = use initial H, 0 = use hash_in
+    output logic        busy,
+    output logic        done,
+    output logic [255:0] hash_out
+);
+
+    //initial hash val
+    localparam logic [31:0] H0_INIT = 32'h6a09e667;
+    localparam logic [31:0] H1_INIT = 32'hbb67ae85;
+    localparam logic [31:0] H2_INIT = 32'h3c6ef372;
+    localparam logic [31:0] H3_INIT = 32'ha54ff53a;
+    localparam logic [31:0] H4_INIT = 32'h510e527f;
+    localparam logic [31:0] H5_INIT = 32'h9b05688c;
+    localparam logic [31:0] H6_INIT = 32'h1f83d9ab;
+    localparam logic [31:0] H7_INIT = 32'h5be0cd19;
+    
+    //K constants
+    logic [31:0] K [64];
+    initial begin
+        K[0]  = 32'h428a2f98; K[1]  = 32'h71374491; K[2]  = 32'hb5c0fbcf; K[3]  = 32'he9b5dba5;
+        K[4]  = 32'h3956c25b; K[5]  = 32'h59f111f1; K[6]  = 32'h923f82a4; K[7]  = 32'hab1c5ed5;
+        K[8]  = 32'hd807aa98; K[9]  = 32'h12835b01; K[10] = 32'h243185be; K[11] = 32'h550c7dc3;
+        K[12] = 32'h72be5d74; K[13] = 32'h80deb1fe; K[14] = 32'h9bdc06a7; K[15] = 32'hc19bf174;
+        K[16] = 32'he49b69c1; K[17] = 32'hefbe4786; K[18] = 32'h0fc19dc6; K[19] = 32'h240ca1cc;
+        K[20] = 32'h2de92c6f; K[21] = 32'h4a7484aa; K[22] = 32'h5cb0a9dc; K[23] = 32'h76f988da;
+        K[24] = 32'h983e5152; K[25] = 32'ha831c66d; K[26] = 32'hb00327c8; K[27] = 32'hbf597fc7;
+        K[28] = 32'hc6e00bf3; K[29] = 32'hd5a79147; K[30] = 32'h06ca6351; K[31] = 32'h14292967;
+        K[32] = 32'h27b70a85; K[33] = 32'h2e1b2138; K[34] = 32'h4d2c6dfc; K[35] = 32'h53380d13;
+        K[36] = 32'h650a7354; K[37] = 32'h766a0abb; K[38] = 32'h81c2c92e; K[39] = 32'h92722c85;
+        K[40] = 32'ha2bfe8a1; K[41] = 32'ha81a664b; K[42] = 32'hc24b8b70; K[43] = 32'hc76c51a3;
+        K[44] = 32'hd192e819; K[45] = 32'hd6990624; K[46] = 32'hf40e3585; K[47] = 32'h106aa070;
+        K[48] = 32'h19a4c116; K[49] = 32'h1e376c08; K[50] = 32'h2748774c; K[51] = 32'h34b0bcb5;
+        K[52] = 32'h391c0cb3; K[53] = 32'h4ed8aa4a; K[54] = 32'h5b9cca4f; K[55] = 32'h682e6ff3;
+        K[56] = 32'h748f82ee; K[57] = 32'h78a5636f; K[58] = 32'h84c87814; K[59] = 32'h8cc70208;
+        K[60] = 32'h90befffa; K[61] = 32'ha4506ceb; K[62] = 32'hbef9a3f7; K[63] = 32'hc67178f2;
+    end
+
+    typedef enum logic [2:0] {
+        IDLE,
+        INIT,
+        ROUND,
+        FINAL,
+        DONE_STATE
+    } state_t;
+    
+    state_t state;
+    logic [5:0] round_counter;  
+
+    logic [31:0] a, b, c, d, e, f, g, h;
+    
+    //hash states
+    logic [31:0] H0, H1, H2, H3, H4, H5, H6, H7;
+    
+    //circular fifo of the last 16 words, and compute W on the fly - saves space without really losing time efficiency
+    logic [31:0] W [16];
+    logic [31:0] W_current;
+    
+    //SHA-256 functions as per current algorithm 
+    function automatic logic [31:0] ROTR(logic [31:0] x, int n);
+        return (x >> n) | (x << (32 - n));
+    endfunction
+    
+    function automatic logic [31:0] SHR(logic [31:0] x, int n);
+        return x >> n;
+    endfunction
+    
+    function automatic logic [31:0] Ch(logic [31:0] x, y, z);
+        return (x & y) ^ (~x & z);
+    endfunction
+    
+    function automatic logic [31:0] Maj(logic [31:0] x, y, z);
+        return (x & y) ^ (x & z) ^ (y & z);
+    endfunction
+    
+    function automatic logic [31:0] Sum0(logic [31:0] x);
+        return ROTR(x, 2) ^ ROTR(x, 13) ^ ROTR(x, 22);
+    endfunction
+    
+    function automatic logic [31:0] Sum1(logic [31:0] x);
+        return ROTR(x, 6) ^ ROTR(x, 11) ^ ROTR(x, 25);
+    endfunction
+    
+    function automatic logic [31:0] sigma0(logic [31:0] x);
+        return ROTR(x, 7) ^ ROTR(x, 18) ^ SHR(x, 3);
+    endfunction
+    
+    function automatic logic [31:0] sigma1(logic [31:0] x);
+        return ROTR(x, 17) ^ ROTR(x, 19) ^ SHR(x, 10);
+    endfunction
+    
+    //the first 16 rounds, W comes from the input block
+    //successive rounds (16-63) are computed from previous W values
+    logic [3:0] w_idx;
+    assign w_idx = round_counter[3:0];
+    
+    assign W_current = (round_counter < 16) ? W[w_idx] :
+                       (sigma1(W[(w_idx - 2) & 4'hF]) + 
+                        W[(w_idx - 7) & 4'hF] + 
+                        sigma0(W[(w_idx - 15) & 4'hF]) + 
+                        W[w_idx]);
+    
+    logic [31:0] T1, T2;
+    assign T1 = h + Sum1(e) + Ch(e, f, g) + K[round_counter] + W_current;
+    assign T2 = Sum0(a) + Maj(a, b, c);
+    
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            state <= IDLE;
+            busy <= 1'b0;
+            done <= 1'b0;
+            round_counter <= '0;
+            hash_out <= '0;
+            
+            {a, b, c, d, e, f, g, h} <= '0;
+            {H0, H1, H2, H3, H4, H5, H6, H7} <= '0;
+            
+            for (int i = 0; i < 16; i = i + 1) begin
+                W[i] <= '0;
+            end
+            
+        end else begin
+            case (state)
+                
+                IDLE: begin
+                    done <= 1'b0;
+                    busy <= 1'b0;
+                    
+                    if (start) begin
+                        state <= INIT;
+                        busy <= 1'b1;
+                    end
+                end
+                
+                INIT: begin
+                    //load the input block into W
+                    //the block comes in as one big 512-bit value, which gets split into 16 words
+                    for (int i = 0; i < 16; i++) begin
+                        W[i] <= block_in[511 - i*32 -: 32];
+                    end
+                    
+                    //initialize H values
+                    if (init_hash) begin
+                        H0 <= H0_INIT;
+                        H1 <= H1_INIT;
+                        H2 <= H2_INIT;
+                        H3 <= H3_INIT;
+                        H4 <= H4_INIT;
+                        H5 <= H5_INIT;
+                        H6 <= H6_INIT;
+                        H7 <= H7_INIT;
+                    end else begin
+                        H0 <= hash_in[255:224];
+                        H1 <= hash_in[223:192];
+                        H2 <= hash_in[191:160];
+                        H3 <= hash_in[159:128];
+                        H4 <= hash_in[127:96];
+                        H5 <= hash_in[95:64];
+                        H6 <= hash_in[63:32];
+                        H7 <= hash_in[31:0];
+                    end
+                    
+                    //initialize working variables from H
+                    if (init_hash) begin
+                        a <= H0_INIT;
+                        b <= H1_INIT;
+                        c <= H2_INIT;
+                        d <= H3_INIT;
+                        e <= H4_INIT;
+                        f <= H5_INIT;
+                        g <= H6_INIT;
+                        h <= H7_INIT;
+                    end else begin
+                        a <= hash_in[255:224];
+                        b <= hash_in[223:192];
+                        c <= hash_in[191:160];
+                        d <= hash_in[159:128];
+                        e <= hash_in[127:96];
+                        f <= hash_in[95:64];
+                        g <= hash_in[63:32];
+                        h <= hash_in[31:0];
+                    end
+                    
+                    round_counter <= '0;
+                    state <= ROUND;
+                end
+                
+                ROUND: begin
+                    if (round_counter >= 16) begin
+                        W[w_idx] <= W_current;
+                    end
+
+                    h <= g;
+                    g <= f;
+                    f <= e;
+                    e <= d + T1;
+                    d <= c;
+                    c <= b;
+                    b <= a;
+                    a <= T1 + T2;
+                    
+                    if (round_counter == 6'd63) begin
+                        state <= FINAL;
+                    end else begin
+                        round_counter <= round_counter + 1'b1;
+                    end
+                end
+                
+                FINAL: begin
+                    //accumlators 
+                    H0 <= H0 + a;
+                    H1 <= H1 + b;
+                    H2 <= H2 + c;
+                    H3 <= H3 + d;
+                    H4 <= H4 + e;
+                    H5 <= H5 + f;
+                    H6 <= H6 + g;
+                    H7 <= H7 + h;
+                    
+                    state <= DONE_STATE;
+                end
+                
+                DONE_STATE: begin
+                    hash_out <= {H0, H1, H2, H3, H4, H5, H6, H7};
+                    done <= 1'b1;
+                    busy <= 1'b0;
+                    state <= IDLE;
+                end
+                
+                default: state <= IDLE;
+                
+            endcase
+        end
+    end
+
+endmodule

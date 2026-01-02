@@ -43,7 +43,7 @@ module bitcoin_miner (
     logic        hasher_done;
     logic [255:0] hasher_hash_out;
     
-    sha256_core hasher (
+    sha256 hasher (
         .clk(clk),
         .rst_n(rst_n),
         .start(hasher_start),
@@ -64,7 +64,7 @@ module bitcoin_miner (
         header = header_template;
         //insert nonce at bytes 76-79
         //bitcoin uses little-endian, so byte 76 gets bits [7:0] TODO requires heavy verification and memory dump
-        header[79*8 +: 32] = {nonce[7:0], nonce[15:8], nonce[23:16], nonce[31:24]};
+        header[639:608] = {nonce[7:0], nonce[15:8], nonce[23:16], nonce[31:24]};
     end
         //block 0: First 512 bits (64 bytes)
     //block 1: Remaining 128 bits (16 bytes) + padding
@@ -126,6 +126,7 @@ module bitcoin_miner (
                     hasher_init_hash <= 1'b1;
                     hasher_start <= 1'b1;
                 end
+                
                 
                 HASH: begin
                     if (hasher_done) begin

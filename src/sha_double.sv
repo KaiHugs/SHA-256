@@ -33,7 +33,7 @@ module sha256_double (
     
     logic [255:0] hash1;
     
-    sha256_core core (
+    sha256 core (
         .clk(clk),
         .rst_n(rst_n),
         .start(core_start),
