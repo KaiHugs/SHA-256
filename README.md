@@ -59,18 +59,7 @@ Real Bitcoin ASICs: 100 TH/s. So this is about 440 million times slower.
 
 ## Design Choices
 
-**Why iterative?** Simplest to verify. Could unroll more rounds per cycle or add parallel cores later, but one round per cycle is clear and works.
-
-**Why not use the double wrapper in the miner?** The miner needs to handle the 80-byte header split across two SHA blocks. Double wrapper expects single-block inputs.
-
 ## Common Issues
-
-If tests fail:
-- Make sure all .sv files are in the same directory
-- Check you're running the right .do file for the phase
-- ModelSim needs the -sv flag for SystemVerilog
-
-Usual problems are endianness in nonce insertion or padding errors in block 1.
 
 ## What's Tested
 
