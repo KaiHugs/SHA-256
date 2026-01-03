@@ -2,14 +2,14 @@
 //MAIN ALGORITHM
 
 module sha256 (
-    input  logic        clk,
-    input  logic        rst_n,
-    input  logic        start,          
+    input  logic clk,
+    input  logic rst_n,
+    input  logic start,          
     input  logic [511:0] block_in,      // message block
     input  logic [255:0] hash_in,       // previous hash for chaining
-    input  logic        init_hash,      // 1 = use initial H, 0 = use hash_in
-    output logic        busy,
-    output logic        done,
+    input  logic init_hash,      // 1 = use initial H, 0 = use hash_in
+    output logic busy,
+    output logic done,
     output logic [255:0] hash_out
 );
 
@@ -102,12 +102,26 @@ module sha256 (
     logic [3:0] w_idx;
     assign w_idx = round_counter[3:0];
     
-    assign W_current = (round_counter < 16) ? W[w_idx] :
-                       (sigma1(W[(w_idx - 2) & 4'hF]) + 
-                        W[(w_idx - 7) & 4'hF] + 
-                        sigma0(W[(w_idx - 15) & 4'hF]) + 
-                        W[w_idx]);
-    
+    always_comb begin
+    if (round_counter < 16) begin
+        W_current = W[w_idx];//first 16 rounds: use input block directly
+    end else begin
+        //rounds 16-63: compute from previous W values
+        logic [31:0] w_minus_2;
+        logic [31:0] w_minus_7;
+        logic [31:0] w_minus_15;
+        logic [31:0] w_minus_16;
+        
+        w_minus_2  = W[(w_idx - 2) & 4'hF];
+        w_minus_7  = W[(w_idx - 7) & 4'hF];
+        w_minus_15 = W[(w_idx - 15) & 4'hF];
+        w_minus_16 = W[w_idx];
+        
+        W_current = sigma1(w_minus_2) + w_minus_7 + sigma0(w_minus_15) + w_minus_16;
+    end
+end
+
+
     logic [31:0] T1, T2;
     assign T1 = h + Sum1(e) + Ch(e, f, g) + K[round_counter] + W_current;
     assign T2 = Sum0(a) + Maj(a, b, c);

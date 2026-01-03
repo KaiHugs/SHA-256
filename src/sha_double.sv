@@ -1,15 +1,15 @@
 //Author: Kai Hughes | 2025 
-//Double SHA-256 Wrapper
+//Double SHA-256 interface
 
 module sha256_double (
-    input  logic        clk,
-    input  logic        rst_n,
-    input  logic        start,         
+    input  logic clk,
+    input  logic rst_n,
+    input  logic start,         
     input  logic [511:0] block_in,      
-    input  logic        init_hash,      // 1 = use initial H, 0 = use hash_in
+    input  logic init_hash,      // 1 = use initial H, 0 = use hash_in
     input  logic [255:0] hash_in,       // Previous hash for chaining
-    output logic        busy,
-    output logic        done,
+    output logic busy,
+    output logic done,
     output logic [255:0] hash_out       // Final double-hashed result
 );
 
@@ -23,12 +23,12 @@ module sha256_double (
     state_t state;
     
     //niterfacing stuff
-    logic        core_start;
+    logic core_start;
     logic [511:0] core_block_in;
     logic [255:0] core_hash_in;
-    logic        core_init_hash;
-    logic        core_busy;
-    logic        core_done;
+    logic core_init_hash;
+    logic core_busy;
+    logic core_done;
     logic [255:0] core_hash_out;
     
     logic [255:0] hash1;

@@ -2,7 +2,7 @@
 //FPGA Top Level for Bitcoin Miner
 
 module board_miner (
-    input  logic       CLOCK_50,       
+    input  logic CLOCK_50,       
     input  logic [1:0] KEY,             
     
     //switches for difficulty
@@ -49,9 +49,9 @@ bitcoin_miner miner (
         end
     end
     
-    logic        busy;
-    logic        found;
-    logic        exhausted;
+    logic busy;
+    logic found;
+    logic exhausted;
     logic [31:0] nonce_out;
     logic [255:0] hash_out;
     

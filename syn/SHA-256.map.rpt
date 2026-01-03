@@ -1,5 +1,5 @@
 Analysis & Synthesis report for SHA-256
-Thu Jan 01 18:29:33 2026
+Sat Jan 03 13:24:43 2026
 Quartus Prime Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
 
 
@@ -51,7 +51,7 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                  ;
 +---------------------------------+---------------------------------------------+
-; Analysis & Synthesis Status     ; Successful - Thu Jan 01 18:29:32 2026       ;
+; Analysis & Synthesis Status     ; Successful - Sat Jan 03 13:24:43 2026       ;
 ; Quartus Prime Version           ; 19.1.0 Build 670 09/22/2019 SJ Lite Edition ;
 ; Revision Name                   ; SHA-256                                     ;
 ; Top-level Entity Name           ; board_miner                                 ;
@@ -174,9 +174,9 @@ https://fpgasoftware.intel.com/eula.
 ;     Processor 2            ;   0.1%      ;
 ;     Processor 3            ;   0.1%      ;
 ;     Processor 4            ;   0.1%      ;
-;     Processor 5            ;   0.0%      ;
-;     Processor 6            ;   0.0%      ;
-;     Processor 7            ;   0.0%      ;
+;     Processor 5            ;   0.1%      ;
+;     Processor 6            ;   0.1%      ;
+;     Processor 7            ;   0.1%      ;
 ;     Processor 8            ;   0.0%      ;
 ;     Processors 9-16        ;   0.0%      ;
 +----------------------------+-------------+
@@ -568,7 +568,7 @@ Encoding Type:  One-Hot
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
-    Info: Processing started: Thu Jan 01 18:29:14 2026
+    Info: Processing started: Sat Jan 03 13:24:25 2026
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off SHA-256 -c SHA-256
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 16 of the 16 processors detected
@@ -580,6 +580,8 @@ Info (12021): Found 1 design units, including 1 entities, in source file /users/
     Info (12023): Found entity 1: bitcoin_miner File: C:/Users/Kai/Documents/GitHub/SHA-256/src/bitcoin_miner.sv Line: 4
 Info (12021): Found 1 design units, including 1 entities, in source file /users/kai/documents/github/sha-256/src/board_miner.sv
     Info (12023): Found entity 1: board_miner File: C:/Users/Kai/Documents/GitHub/SHA-256/src/board_miner.sv Line: 4
+Info (12021): Found 1 design units, including 1 entities, in source file /users/kai/documents/github/sha-256/src/risc_miner_interface.sv
+    Info (12023): Found entity 1: risc_miner_interface File: C:/Users/Kai/Documents/GitHub/SHA-256/src/risc_miner_interface.sv Line: 23
 Info (12127): Elaborating entity "board_miner" for the top level hierarchy
 Info (12128): Elaborating entity "bitcoin_miner" for hierarchy "bitcoin_miner:miner" File: C:/Users/Kai/Documents/GitHub/SHA-256/src/board_miner.sv Line: 28
 Warning (10036): Verilog HDL or VHDL warning at bitcoin_miner.sv(60): object "hash_after_block0" assigned a value but never read File: C:/Users/Kai/Documents/GitHub/SHA-256/src/bitcoin_miner.sv Line: 60
@@ -600,10 +602,10 @@ Info (21057): Implemented 3777 device resources after synthesis - the final reso
     Info (21059): Implemented 18 output pins
     Info (21061): Implemented 3746 logic cells
 Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 6 warnings
-    Info: Peak virtual memory: 4938 megabytes
-    Info: Processing ended: Thu Jan 01 18:29:33 2026
-    Info: Elapsed time: 00:00:19
-    Info: Total CPU time (on all processors): 00:00:37
+    Info: Peak virtual memory: 4916 megabytes
+    Info: Processing ended: Sat Jan 03 13:24:43 2026
+    Info: Elapsed time: 00:00:18
+    Info: Total CPU time (on all processors): 00:00:36
 
 
 +------------------------------------------+

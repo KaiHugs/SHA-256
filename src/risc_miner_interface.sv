@@ -21,15 +21,15 @@ bit 3: exhausted (RO)
 */
 
 module risc_miner_interface (
-    input  logic        clk,
-    input  logic        rst_n,
+    input  logic clk,
+    input  logic rst_n,
     output logic [9:0]  leds
 );
 
     //cpu bus
     logic [31:0] mem_addr, mem_wdata, mem_rdata;
     logic [3:0]  mem_wstrb;
-    logic        mem_valid, mem_ready;
+    logic mem_valid, mem_ready;
 
     picorv32 cpu (
         .clk(clk),
@@ -43,12 +43,12 @@ module risc_miner_interface (
     );
 
     //miner regs
-    logic        miner_start;
-    logic        miner_busy;
-    logic        miner_found;
-    logic        miner_exhausted;
+    logic miner_start;
+    logic miner_busy;
+    logic miner_found;
+    logic miner_exhausted;
 
-    logic [31:0]  max_nonce_reg;
+    logic [31:0] max_nonce_reg;
     logic [639:0] header_template_reg;
     logic [255:0] target_reg;
 
@@ -72,7 +72,7 @@ module risc_miner_interface (
     logic ram_sel, miner_sel;
 
     always_comb begin
-        ram_sel   = (mem_addr[31:16] == 16'h0000);
+        ram_sel = (mem_addr[31:16] == 16'h0000);
         miner_sel = (mem_addr[31:16] == 16'h8000);
     end
 
@@ -99,10 +99,10 @@ module risc_miner_interface (
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            miner_start          <= 1'b0;
-            max_nonce_reg        <= 32'h0010_0000;
-            header_template_reg  <= 640'h0;
-            target_reg           <= {256{1'b1}};
+            miner_start <= 1'b0;
+            max_nonce_reg <= 32'h0010_0000;
+            header_template_reg <= 640'h0;
+            target_reg <= {256{1'b1}};
         end else begin
             miner_start <= 1'b0;
 
@@ -115,10 +115,10 @@ module risc_miner_interface (
                     8'h34: target_reg[223:192] <= mem_wdata;
                     8'h38: target_reg[191:160] <= mem_wdata;
                     8'h3c: target_reg[159:128] <= mem_wdata;
-                    8'h40: target_reg[127:96]  <= mem_wdata;
-                    8'h44: target_reg[95:64]   <= mem_wdata;
-                    8'h48: target_reg[63:32]   <= mem_wdata;
-                    8'h4c: target_reg[31:0]    <= mem_wdata;
+                    8'h40: target_reg[127:96] <= mem_wdata;
+                    8'h44: target_reg[95:64] <= mem_wdata;
+                    8'h48: target_reg[63:32] <= mem_wdata;
+                    8'h4c: target_reg[31:0] <= mem_wdata;
 
                     8'h50: header_template_reg[639:608] <= mem_wdata;
                     8'h54: header_template_reg[607:576] <= mem_wdata;
@@ -136,10 +136,10 @@ module risc_miner_interface (
                     8'h84: header_template_reg[223:192] <= mem_wdata;
                     8'h88: header_template_reg[191:160] <= mem_wdata;
                     8'h8c: header_template_reg[159:128] <= mem_wdata;
-                    8'h90: header_template_reg[127:96]  <= mem_wdata;
-                    8'h94: header_template_reg[95:64]   <= mem_wdata;
-                    8'h98: header_template_reg[63:32]   <= mem_wdata;
-                    8'h9c: header_template_reg[31:0]    <= mem_wdata;
+                    8'h90: header_template_reg[127:96] <= mem_wdata;
+                    8'h94: header_template_reg[95:64] <= mem_wdata;
+                    8'h98: header_template_reg[63:32] <= mem_wdata;
+                    8'h9c: header_template_reg[31:0] <= mem_wdata;
                 endcase
             end
         end
@@ -175,9 +175,9 @@ module risc_miner_interface (
         end
     end
 
-    assign leds[0]   = miner_busy;
-    assign leds[1]   = miner_found;
-    assign leds[2]   = miner_exhausted;
+    assign leds[0] = miner_busy;
+    assign leds[1] = miner_found;
+    assign leds[2] = miner_exhausted;
     assign leds[9:3] = nonce_out[6:0];
 
 endmodule

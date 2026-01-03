@@ -16,11 +16,11 @@ def sha256(data):
     return hashlib.sha256(data).digest()
 
 def double_sha256(data):
-    """Bitcoin's double hash - hash it twice."""
+    """Bitcoin's double hash, hash it twice."""
     return sha256(sha256(data))
 
 def hex_str(data):
-    """Convert bytes to hex string for display."""
+    """Convert byte to hex string for display."""
     return data.hex()
 
 def main():
@@ -31,13 +31,13 @@ def main():
     #empty
     print("\nTest 1: Empty String")
     result = sha256(b"")
-    print(f"Hash:     {hex_str(result)}")
+    print(f"Hash:  {hex_str(result)}")
     print(f"Verilog:  256'h{hex_str(result)}")
     
     #"abc"
     print("\nTest 2: Message 'abc'")
     result = sha256(b"abc")
-    print(f"Hash:     {hex_str(result)}")
+    print(f"Hash:  {hex_str(result)}")
     print(f"Verilog:  256'h{hex_str(result)}")
     
     #"hello"
@@ -49,7 +49,7 @@ def main():
     #double SHA-256 of "hello"
     print("\nTest 4: Double SHA-256 of 'hello'")
     result = double_sha256(b"hello")
-    print(f"Hash:     {hex_str(result)}")
+    print(f"Hash:  {hex_str(result)}")
     print(f"Verilog:  256'h{hex_str(result)}")
     
     print("\n" + "=" * 70)
@@ -67,8 +67,8 @@ def main():
         "1dac2b7c"  #nonce
     )
     
-    print(f"Header:   {hex_str(genesis_header)}")
-    print(f"Length:   {len(genesis_header)} bytes")
+    print(f"Header: {hex_str(genesis_header)}")
+    print(f"Length: {len(genesis_header)} bytes")
     
     #computing hashign
     result = double_sha256(genesis_header)
@@ -76,16 +76,16 @@ def main():
     
     result_reversed = result[::-1]
     print(f"Hash (little-endian): {hex_str(result_reversed)}")
-    print("                      (This is how Bitcoin displays it)")
+    print("           (how Bitcoin displays it)")
     
     #leading zeros - verificaiton
     print(f"\nLeading zero bytes: {len(result) - len(result.lstrip(b'\\x00'))}")
     
     expected = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
     if hex_str(result_reversed) == expected:
-        print("✓ Matches known genesis block hash")
+        print("Matches known genesis block hash")
     else:
-        print("✗ Doesn't match (something's wrong)")
+        print("Doesn't match")
     
     print("\n" + "=" * 70)
     print("Difficulty Check")
@@ -104,9 +104,9 @@ def main():
     print(f"Hash:       {int.from_bytes(result, 'big'):064x}")
     
     if int.from_bytes(result, 'big') < target:
-        print("✓ Hash is less than target (valid proof of work)")
+        print("Hash is less than target (valid POW)")
     else:
-        print("✗ Hash exceeds target (would be invalid)")
+        print("Hash exceeds target (would be invalid)")
     
     print("\n" + "=" * 70)
     print("Block Structure")
@@ -122,7 +122,7 @@ def main():
     print("Mini Mining Example")
     print("=" * 70)
     print("Finding a hash with 1 leading zero byte...")
-    print("(This is way easier than real Bitcoin difficulty)")
+    print("(Easier than real Bitcoin difficulty)")
     
     #test header
     test_header = bytearray(80)
@@ -140,12 +140,12 @@ def main():
             break
         
         if nonce % 10000 == 0 and nonce > 0:
-            print(f"  Tried {nonce:,} nonces...")
+            print(f" Tried {nonce:,} nonces...")
     else:
         print("Didn't find one in 1M attempts")
     
     print("\n" + "=" * 70)
-    print("Done! Use these values to verify your hardware.")
+    print("Done! Check nums")
     print("=" * 70)
 
 if __name__ == "__main__":

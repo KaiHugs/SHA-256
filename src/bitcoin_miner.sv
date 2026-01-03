@@ -2,15 +2,15 @@
 //Bitcoin Mining Controller controlling nonce attemps
 
 module bitcoin_miner (
-    input  logic        clk,
-    input  logic        rst_n,  
-    input  logic        start,              
+    input  logic clk,
+    input  logic rst_n,  
+    input  logic start,              
     input  logic [639:0] header_template,   //80-byte header with nonce=0 
     input  logic [255:0] target,           
     input  logic [31:0]  max_nonce,         
-    output logic        busy,              
-    output logic        found,              
-    output logic        exhausted,          //no valid nonce
+    output logic busy,              
+    output logic found,              
+    output logic exhausted,          //no valid nonce
     output logic [31:0]  nonce_out,         //valid nonce
     output logic [255:0] hash_out           
 );
@@ -35,12 +35,12 @@ module bitcoin_miner (
     // Bitcoin header 640bits or 2 blocks
     logic [511:0] block0, block1;
     
-    logic        hasher_start;
+    logic hasher_start;
     logic [511:0] hasher_block_in;
-    logic        hasher_init_hash;
+    logic hasher_init_hash;
     logic [255:0] hasher_hash_in;
-    logic        hasher_busy;
-    logic        hasher_done;
+    logic hasher_busy;
+    logic hasher_done;
     logic [255:0] hasher_hash_out;
     
     sha256 hasher (
