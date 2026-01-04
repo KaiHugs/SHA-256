@@ -21,10 +21,44 @@ bit 3: exhausted (RO)
 */
 
 module risc_miner_interface (
-    input  logic clk,
-    input  logic rst_n,
+    input  logic CLOCK_50,
+    input  logic rst_n_raw,
     output logic [9:0]  leds
 );
+
+    logic clk_100;
+    logic pll_locked;
+    logic pll_areset;
+    logic rst_n;
+    logic [3:0] reset_counter;
+    
+    assign pll_areset = ~rst_n_raw;
+    
+    Clock_100_PLL pll (
+        .areset(pll_areset),
+        .inclk0(CLOCK_50),
+        .c0(clk_100),
+        .locked(pll_locked)
+    );
+    
+    always_ff @(posedge clk_100 or negedge rst_n_raw) begin
+        if (!rst_n_raw) begin
+            reset_counter <= 4'h0;
+            rst_n <= 1'b0;
+        end else begin
+            if (pll_locked) begin
+                if (reset_counter != 4'hF) begin
+                    reset_counter <= reset_counter + 1'b1;
+                    rst_n <= 1'b0;
+                end else begin
+                    rst_n <= 1'b1;
+                end
+            end else begin
+                reset_counter <= 4'h0;
+                rst_n <= 1'b0;
+            end
+        end
+    end
 
     //cpu bus
     logic [31:0] mem_addr, mem_wdata, mem_rdata;
@@ -32,7 +66,7 @@ module risc_miner_interface (
     logic mem_valid, mem_ready;
 
     picorv32 cpu (
-        .clk(clk),
+        .clk(clk_100),
         .resetn(rst_n),
         .mem_addr(mem_addr),
         .mem_wdata(mem_wdata),
@@ -49,14 +83,14 @@ module risc_miner_interface (
     logic miner_exhausted;
 
     logic [31:0] max_nonce_reg;
-    logic [639:0] header_template_reg;
-    logic [255:0] target_reg;
+    logic [639:0]header_template_reg;
+    logic [255:0]target_reg;
 
-    logic [31:0]  nonce_out;
+    logic [31:0] nonce_out;
     logic [255:0] hash_out;
 
     bitcoin_miner miner (
-        .clk(clk),
+        .clk(clk_100),
         .rst_n(rst_n),
         .start(miner_start),
         .header_template(header_template_reg),
@@ -73,21 +107,21 @@ module risc_miner_interface (
 
     always_comb begin
         ram_sel = (mem_addr[31:16] == 16'h0000);
-        miner_sel = (mem_addr[31:16] == 16'h8000);
+        miner_sel =(mem_addr[31:16] == 16'h8000);
     end
 
     //16kb
     logic [31:0] ram [0:4095];
-    logic [31:0] ram_rdata;
+    logic [31:0]ram_rdata;
 
     initial begin
         $readmemh("program.hex", ram);
     end
 
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk_100) begin
         if (ram_sel && mem_valid) begin
-            if (mem_wstrb[0]) ram[mem_addr[13:2]][7:0]   <= mem_wdata[7:0];
-            if (mem_wstrb[1]) ram[mem_addr[13:2]][15:8]  <= mem_wdata[15:8];
+            if (mem_wstrb[0]) ram[mem_addr[13:2]][7:0] <= mem_wdata[7:0];
+            if (mem_wstrb[1]) ram[mem_addr[13:2]][15:8] <= mem_wdata[15:8];
             if (mem_wstrb[2]) ram[mem_addr[13:2]][23:16] <= mem_wdata[23:16];
             if (mem_wstrb[3]) ram[mem_addr[13:2]][31:24] <= mem_wdata[31:24];
             ram_rdata <= ram[mem_addr[13:2]];
@@ -97,7 +131,7 @@ module risc_miner_interface (
     //miner mmio
     logic [31:0] miner_rdata;
 
-    always_ff @(posedge clk or negedge rst_n) begin
+    always_ff @(posedge clk_100 or negedge rst_n) begin
         if (!rst_n) begin
             miner_start <= 1'b0;
             max_nonce_reg <= 32'h0010_0000;

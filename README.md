@@ -101,6 +101,15 @@ SHA-256 works on 512-bit blocks, so 80 bytes = 640 bits needs two blocks. Block 
 - Python 3 if you want to run sha_ref.py (optional)
 - Quartus/Lite
 
+
+## Future Research
+
+ Looking to create a general-purpose research platform for FPGA-based acceleration. The current RISC-V + SHA-256 architecture provides a research-orientated foundation for studying hardware/software design patterns. 
+ 
+ Working Towards:
+(1) Templating the accelerator interface to support multiple algorithms (AES, RSA, and eventually ML inference ) beyond SHA-256, enabling comparative studies of different acceleration strategies;
+(2) Developing as an open-source SmartNIC platform for in-network computing research, where the SHA-256 core could perform DDoS detection, or cache key generation at line-rate;
+
 ## License
 
-Educational project. Do whatever you want with it.
+Educational project. Do whatever you want with it. 2026. 
