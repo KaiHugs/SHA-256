@@ -43,6 +43,11 @@ echo -e "${YELLOW}Compiling startup code...${NC}"
 $CC -march=$ARCH -mabi=$ABI -c start.S -o start.o
 echo "✓ start.o"
 
+# Compile string utilities
+echo -e "${YELLOW}Compiling string utilities...${NC}"
+$CC -march=$ARCH -mabi=$ABI -O2 -c string_utils.c -o string_utils.o
+echo "✓ string_utils.o"
+
 # Compile main code
 echo -e "${YELLOW}Compiling miner.c...${NC}"
 $CC -march=$ARCH -mabi=$ABI -O2 -c miner.c -o miner.o
@@ -51,7 +56,7 @@ echo "✓ miner.o"
 # Link
 echo -e "${YELLOW}Linking...${NC}"
 $CC -march=$ARCH -mabi=$ABI -nostdlib -T link.ld \
-    start.o miner.o -o miner.elf
+    start.o string_utils.o miner.o -o miner.elf
 echo "✓ miner.elf"
 
 # Generate hex file

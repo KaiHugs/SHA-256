@@ -59,15 +59,15 @@
 
 
 /*
- * Bitcoin Miner Software for PicoRV32 + FPGA Hardware
- * Author: Kai Hughes | 2025
- * 
- * This software interfaces with the hardware bitcoin miner
- * through memory-mapped I/O registers.
- * 
- * Compile with RISC-V GCC:
- * riscv32-unknown-elf-gcc -march=rv32i -mabi=ilp32 -nostdlib -T link.ld miner.c -o miner.elf
- * riscv32-unknown-elf-objcopy -O verilog miner.elf program.hex
+  Bitcoin Miner Software for PicoRV32 + FPGA Hardware
+  Author: Kai Hughes | 2026
+  
+  This software interfaces with the hardware bitcoin miner
+  through memory-mapped I/O registers.
+  
+  Compile with RISC-V GCC:
+  riscv32-unknown-elf-gcc -march=rv32i -mabi=ilp32 -nostdlib -T link.ld miner.c -o miner.elf
+  riscv32-unknown-elf-objcopy -O verilog miner.elf program.hex
  */
 
 #define MINER_BASE      0x80000000
@@ -229,6 +229,4 @@ void main(void) {
     }
 }
 
-void _start(void) {
-    main();
-}
+// REMOVED: _start() function - it's already in start.S

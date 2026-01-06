@@ -26,7 +26,7 @@ sim_miner.do           - Run Phase 3 tests
 
 ### Software (RISC-V)
 ```
-software/
+code/
   miner.c              - Mining control software (C)
   start.S              - RISC-V startup assembly
   link.ld              - Linker script for memory layout
@@ -70,6 +70,7 @@ Real Bitcoin ASICs: 100 TH/s. So this is about 440 million times slower.
 ## Design Choices
 
 ## Common Issues
+Different computer I ran required instead through wsl (reason unknown) sudo apt-get install gcc-riscv64-linux-gnu
 
 ## What's Tested
 
@@ -79,7 +80,6 @@ Phase 2: Same tests using the interface
 
 Phase 3: Easy target (finds quickly), impossible target (exhausts correctly), genesis block attempt, performance measurement
 
-## Next Stages (Not Done)
 
 **Phase 4: FPGA Synthesis**
 Get it running on actual hardware. Need to make a top-level interface, synthesize in Quartus, meet timing, program an FPGA boards.
@@ -90,22 +90,25 @@ The Bitcoin miner uses a hybrid HDL+C architecture. Before compiling in Quartus,
 
 **Building the Software:**
 
-1. Install the RISC-V GCC toolchain:
-   ```bash
-   # Ubuntu/Debian
-   sudo apt-get install gcc-riscv64-unknown-elf
-   
-   # macOS (Homebrew)
-   brew tap riscv/riscv
-   brew install riscv-tools
+1. Install the RISC-V GCC toolchain (only tested on linux):
    ```
+**Windows/Linux:**
+```bash
+# 1. Install the RISC-V GCC toolchain
+# https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/download/v12.2.0-1/xpack-riscv-none-elf-gcc-12.2.0-1-linux-x64.tar.gz
 
-2. Navigate to the software directory and build:
-   ```bash
-   cd software/
-   ./build.sh
-   ```
+# 2. Setup (see first section in setup.md)
+cd ~ && tar -xzf xpack-riscv-none-elf-gcc-*.tar.gz
 
+# 3. Go to the software directory and build:
+cd code/ && ./build.sh
+```
+
+**macOS:**
+```bash
+brew tap riscv/riscv && brew install riscv-tools
+cd code/ && ./build.sh
+```
 3. This compiles `miner.c` (mining control logic) into `program.hex` - machine code that gets embedded into FPGA RAM during Quartus synthesis.
 
 **How It Works:**
@@ -133,6 +136,8 @@ Copy `program.hex` to your Quartus project folder before synthesis. This separat
 0x80000030 : Target (8 words)
 0x80000050 : Header (20 words)
 ```
+
+## Next Stages (Not Done)
 
 **Phase 6: Optimization**  
 

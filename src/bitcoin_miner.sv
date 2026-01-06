@@ -1,6 +1,8 @@
 //Author: Kai Hughes | 2025 
 //Bitcoin Mining Controller controlling nonce attemps
 
+//Legacy File -- won't be used on compilation
+
 module bitcoin_miner (
     input  logic clk,
     input  logic rst_n,  
