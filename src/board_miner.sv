@@ -1,12 +1,13 @@
 //Author: Kai Hughes | 2025 
 //FPGA Top Level for Bitcoin Miner
 
+
 module board_miner (
-    input  logic CLOCK_50,       
-    input  logic [1:0] KEY,             
-    
+    input logic CLOCK_50,       
+    input logic [1:0] KEY,             
+
     //switches for difficulty
-    input  logic [9:0] SW,             
+    input logic [9:0] SW,             
     
     output logic [9:0] LEDR,            
     output logic [7:0] LEDG             

@@ -9,7 +9,7 @@
 module tb_risc_miner_interface;
 
     logic CLOCK_50;
-    logic  rst_n_raw;
+    logic rst_n_raw;
     logic [9:0] leds;
     
     risc_miner_interface dut (
@@ -281,7 +281,7 @@ module tb_pll;
         $display("Output frequency: %.2f MHz", 1000.0/period);
         
         if (period > 9.5 && period < 10.5) begin
-            $display("**SUCCESS: Output is 100MHz***");
+            $display("**SUCCESS: Output is 100MHz");
         end else begin
             $display("Timing Failture: Output frequency incorrect");
         end
@@ -292,3 +292,88 @@ module tb_pll;
     end
 
 endmodule
+
+module tb_mining_stimulus;
+
+    logic        CLOCK_50;
+    logic        rst_n_raw;
+    logic [9:0]  leds;
+    
+    logic [31:0] nonce_out;
+    logic [255:0] hash_out;
+    logic miner_busy, miner_found;
+    
+   
+    risc_miner_interface dut (
+        .CLOCK_50(CLOCK_50),
+        .rst_n_raw(rst_n_raw),
+        .leds(leds)
+    );
+    
+    // Tap internal signals
+    assign nonce_out = dut.nonce_out;
+    assign hash_out = dut.hash_out;
+    assign miner_busy = dut.miner_busy;
+    assign miner_found = dut.miner_found;
+    
+    // 50MHz clock
+    initial begin
+        CLOCK_50 = 0;
+        forever #10 CLOCK_50 = ~CLOCK_50;
+    end
+    
+    initial begin
+        $display("                                               ");
+        $display("Mining Stimulus Test");
+        $display("Testing actual mining operation");
+        
+        rst_n_raw = 0;
+        #500;
+        rst_n_raw = 1;
+        
+        $display("[%0t] Waiting for CPU to start mining", $time);
+        
+        wait(miner_busy);
+        $display("[%0t] Mining started!", $time);
+        
+        fork
+            begin
+                wait(miner_found || dut.miner_exhausted);
+                if (miner_found) begin
+                    $display("[%0t] *** FOUND VALID NONCE! ***", $time);
+                    $display("  Nonce: 0x%08h", nonce_out);
+                    $display("  Hash:  0x%064h", hash_out);
+                end else begin
+                    $display("[%0t] Search exhausted", $time);
+                end
+            end
+            
+
+            begin
+                while (miner_busy) begin
+                    #10000;
+                    $display("[%0t] Statis: Mining             (still busy)", $time);
+                end
+            end
+        join_any
+        
+        #10000;
+        $display("                               ");
+        $finish;
+    end
+    
+    // Timeout
+    initial begin
+        #50000000;  // 50ms
+        $display("                ");`
+        $display("TIMEOUT");
+        $finish;
+    end
+    
+    initial begin
+        $dumpfile("mining_stimulus.vcd");
+        $dumpvars(0, tb_mining_stimulus);
+    end
+
+endmodule
+

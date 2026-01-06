@@ -12,16 +12,26 @@ Three phases, all working:
 
 ## Files
 
+### Hardware (HDL)
 ```
 sha256.sv              - SHA-256 core
 sha256_core_tb.sv      - Tests for SHA-256 core
 sha_double.sv          - Double SHA interface
 bitcoin_miner.sv       - Full mining controller
 bitcoin_miner_tb.sv    - Mining tests
-sha_ref.py             - Python reference for checking results
 sim_sha256.do          - Run Phase 1 tests
 sim_double.do          - Run Phase 2 tests  
 sim_miner.do           - Run Phase 3 tests
+```
+
+### Software (RISC-V)
+```
+software/
+  miner.c              - Mining control software (C)
+  start.S              - RISC-V startup assembly
+  link.ld              - Linker script for memory layout
+  build.sh             - Build script for software compilation
+  sha_ref.py           - Python reference for checking results
 ```
 
 ## Running Tests
@@ -74,12 +84,60 @@ Phase 3: Easy target (finds quickly), impossible target (exhausts correctly), ge
 **Phase 4: FPGA Synthesis**
 Get it running on actual hardware. Need to make a top-level interface, synthesize in Quartus, meet timing, program an FPGA boards.
 
-**Phase 5: Optimization**  
+**Phase 5: RISC-V Software Integration**
 
+The Bitcoin miner uses a hybrid HDL+C architecture. Before compiling in Quartus, you must build the C software that runs on the embedded PicoRV32 RISC-V CPU. 
 
-**Phase 6: Advanced Features**
+**Building the Software:**
+
+1. Install the RISC-V GCC toolchain:
+   ```bash
+   # Ubuntu/Debian
+   sudo apt-get install gcc-riscv64-unknown-elf
+   
+   # macOS (Homebrew)
+   brew tap riscv/riscv
+   brew install riscv-tools
+   ```
+
+2. Navigate to the software directory and build:
+   ```bash
+   cd software/
+   ./build.sh
+   ```
+
+3. This compiles `miner.c` (mining control logic) into `program.hex` - machine code that gets embedded into FPGA RAM during Quartus synthesis.
+
+**How It Works:**
+
+The C software controls the hardware accelerator via memory-mapped registers at `0x80000000`:
+- Loading block headers
+- Setting difficulty targets
+- Starting mining operations
+- Reading nonce results
+
+Copy `program.hex` to your Quartus project folder before synthesis. This separation lets you update mining logic quickly without recompiling the entire hardware design.
+
+**Memory Map:**
+```
+0x00000000 - 0x00003FFF : RAM (16KB) - Program & data
+0x80000000 - 0x800000FF : Miner MMIO registers
+```
+
+**MMIO Registers:**
+```
+0x80000000 : Control (start, busy, found flags)
+0x80000004 : Max nonce
+0x80000008 : Nonce output
+0x8000000C : Hash output (8 words)
+0x80000030 : Target (8 words)
+0x80000050 : Header (20 words)
+```
+
+**Phase 6: Optimization**  
+
+**Phase 7: Advanced Features**
 Looking to Implement with RISC-V architecture - might take a million years to implement. 
-
 
 ## Notes
 
@@ -97,19 +155,25 @@ SHA-256 works on 512-bit blocks, so 80 bytes = 640 bits needs two blocks. Block 
 
 ## Requirements
 
-- ModelSim 
+- ModelSim (for simulation)
 - Python 3 if you want to run sha_ref.py (optional)
-- Quartus/Lite
-
+- Quartus/Lite (for FPGA synthesis)
+- RISC-V GCC toolchain (gcc-riscv64-unknown-elf) for software compilation
 
 ## Future Research
 
- Looking to create a general-purpose research platform for FPGA-based acceleration. The current RISC-V + SHA-256 architecture provides a research-orientated foundation for studying hardware/software design patterns. 
+Looking to create a general-purpose research platform for FPGA-based acceleration. The current RISC-V + SHA-256 architecture provides a research-orientated foundation for studying hardware/software design patterns. 
  
- Working Towards:
-(1) Templating the accelerator interface to support multiple algorithms (AES, RSA, and eventually ML inference ) beyond SHA-256, enabling comparative studies of different acceleration strategies;
-(2) Developing as an open-source SmartNIC platform for in-network computing research, where the SHA-256 core could perform DDoS detection, or cache key generation at line-rate;
+Working Towards:
+1. Templating the accelerator interface to support multiple algorithms (AES, RSA, and eventually ML inference) beyond SHA-256, enabling comparative studies of different acceleration strategies
+2. Developing as an open-source SmartNIC platform for in-network computing research, where the SHA-256 core could perform DDoS detection, or cache key generation at line-rate
+
+## Credits
+
+- PicoRV32 by Claire Wolf (YosysHQ)
+- SHA-256 implementation based on FIPS 180-4
+- Bitcoin protocol by Satoshi Nakamoto
 
 ## License
 
-Educational project. Do whatever you want with it. 2026. 
+Educational project. Do whatever you want with it. 2026.

@@ -1,4 +1,4 @@
-//Author: Kai Hughes | 2025 
+//Author: Kai Hughes | 2026
 //Bitcoin Miner Testbench DUT
 //Tests the complete mining controller
 
@@ -9,14 +9,14 @@ module bitcoin_miner_tb;
     logic clk;
     logic rst_n;
     
-    logic        start;
+    logic start;
     logic [639:0] header_template;
     logic [255:0] target;
-    logic [31:0]  max_nonce;
-    logic        busy;
-    logic        found;
-    logic        exhausted;
-    logic [31:0]  nonce_out;
+    logic [31:0] max_nonce;
+    logic busy;
+    logic found;
+    logic exhausted;
+    logic [31:0] nonce_out;
     logic [255:0] hash_out;
     
     bitcoin_miner dut (.*);
@@ -59,9 +59,9 @@ module bitcoin_miner_tb;
     endtask
     
     initial begin
-        $display("==========================================");
+        $display("  ");
         $display("Bitcoin Miner Test");
-        $display("==========================================\n");
+        $display("  \n");
         
         errors = 0;
         test_num = 0;
@@ -127,7 +127,7 @@ module bitcoin_miner_tb;
         
         //nonce = 0x1dac2b7c
         $display("   Known solution: nonce = 0x1dac2b7c");
-        $display("   Searching...");
+        $display("   Searching");
         
         start_mining(header_template, target, 32'h1dac2b7c + 32'd1000);
         
@@ -179,9 +179,9 @@ module bitcoin_miner_tb;
         $display("");
         
         // Summary
-        $display("==========================================");
+        $display("  ");
         $display("Test Summary");
-        $display("==========================================");
+        $display("  ");
         $display("Total tests: %0d", test_num);
         $display("Errors: %0d", errors);
         
@@ -193,7 +193,7 @@ module bitcoin_miner_tb;
             $display("\n%0d TESTS FAILED\n", errors);
         end
         
-        $display("==========================================\n");
+        $display("  \n");
         
         #100;
         $finish;
@@ -218,7 +218,7 @@ module bitcoin_miner_tb;
     end
     
     initial begin
-        #20000000000;  // 20 seconds
+        #20000000000; 
         $display("TIMEOUT: Simulation ran for 20 seconds");
         $display("(This is normal for genesis block test - it's slow!)");
         $finish;

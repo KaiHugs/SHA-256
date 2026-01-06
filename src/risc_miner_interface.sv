@@ -1,5 +1,5 @@
 /*Author: Kai Hughes | 2025
-Wrapper with Miner Integration
+Interface with Miner Integration
 
 0x0000_0000 - 0x0000_3FFF: RAM (16KB)
 0x8000_0000: Miner Control Register
@@ -23,7 +23,7 @@ bit 3: exhausted (RO)
 module risc_miner_interface (
     input  logic CLOCK_50,
     input  logic rst_n_raw,
-    output logic [9:0]  leds
+    output logic [9:0] leds
 );
 
     logic clk_100;

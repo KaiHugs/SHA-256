@@ -1,4 +1,4 @@
-//Author: Kai Hughes | 2025 
+//Author: Kai Hughes | 2026 
 //SHA-256 Core Testbench for DUT
 //Tests with NIST vectors and the Bitcoin genesis block
 
@@ -9,12 +9,12 @@ module sha256_core_tb;
     logic clk;
     logic rst_n;
     
-    logic        start;
+    logic start;
     logic [511:0] block_in;
     logic [255:0] hash_in;
-    logic        init_hash;
-    logic        busy;
-    logic        done;
+    logic init_hash;
+    logic busy;
+    logic done;
     logic [255:0] hash_out;
     
     sha256_core dut (.*);
@@ -74,9 +74,9 @@ module sha256_core_tb;
     endtask
     
     initial begin
-        $display("==========================================");
+        $display("             ");
         $display("SHA-256 Core Test");
-        $display("==========================================\n");
+        $display("             \n");
         
         errors = 0;
         test_num = 0;
@@ -165,13 +165,12 @@ module sha256_core_tb;
         $display("   Final double SHA-256: %064x", hash_out);
         check_result(expected_hash, "Bitcoin Genesis Block");
         
-        $display("   Note: Bitcoin displays this in reverse byte order:");
+        $display("   Bitcoin displays this in reverse byte order:");
         $display("   000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
         $display("");
         
-        $display("==========================================");
+        $display("             ");
         $display("Test Summary");
-        $display("==========================================");
         $display("Total tests: %0d", test_num);
         $display("Errors: %0d", errors);
         
@@ -181,7 +180,7 @@ module sha256_core_tb;
             $display("\n%0d TESTS FAILED\n", errors);
         end
         
-        $display("==========================================\n");
+        $display("             \n");
         
         #100;
         $finish;
@@ -195,7 +194,7 @@ module sha256_core_tb;
     
     initial begin
         #1000000;
-        $display("ERROR: Simulation timeout!");
+        $display("ERROR: Simulation timeout");
         $finish;
     end
 
