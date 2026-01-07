@@ -76,7 +76,7 @@ def main():
     
     result_reversed = result[::-1]
     print(f"Hash (little-endian): {hex_str(result_reversed)}")
-    print("           (how Bitcoin displays it)")
+    print("(how Bitcoin displays it)")
     
     #leading zeros - verificaiton
     print(f"\nLeading zero bytes: {len(result) - len(result.lstrip(b'\\x00'))}")

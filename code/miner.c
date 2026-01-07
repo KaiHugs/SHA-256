@@ -100,6 +100,7 @@ static inline unsigned int bswap32(unsigned int x) {
            ((x & 0x000000FF) << 24);
 }
 
+
 void delay(unsigned int cycles) {
     for (volatile unsigned int i = 0; i < cycles; i++);
 }

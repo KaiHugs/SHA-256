@@ -252,6 +252,7 @@ sudo make
 export PATH="/opt/riscv/bin:$PATH"
 ```
 Can take a bit to build
+'''
 ---
 
 ## Links

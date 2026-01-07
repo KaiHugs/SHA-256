@@ -91,7 +91,6 @@ The Bitcoin miner uses a hybrid HDL+C architecture. Before compiling in Quartus,
 **Building the Software:**
 
 1. Install the RISC-V GCC toolchain (only tested on linux):
-   ```
 **Windows/Linux:**
 ```bash
 # 1. Install the RISC-V GCC toolchain
