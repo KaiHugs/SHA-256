@@ -1,14 +1,15 @@
 # RISC-V Toolchain Setup for Ubuntu/WSL
 
-I've set up the toolchain on 4 different computers through WSL. This lists some issues I've ran into (some issues I still don't really know why). 
+I've set up the toolchain on 4 different computers through WSL. This lists some issues I've ran into (some I still don't really know why). 
 
 ---
 
-## Begin by trying the most conventional way
-
+## Start with the normal way
 ```bash
+# Download this in Windows browser:
 https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/download/v12.2.0-1/xpack-riscv-none-elf-gcc-12.2.0-1-linux-x64.tar.gz
 
+# Then in WSL:
 cd ~
 cp /mnt/c/Users/<YOUR_USERNAME>/Downloads/xpack-riscv-none-elf-gcc-12.2.0-1-linux-x64.tar.gz .
 tar -xzf xpack-riscv-none-elf-gcc-12.2.0-1-linux-x64.tar.gz
@@ -22,7 +23,6 @@ ln -s ~/xpack-riscv-none-elf-gcc-12.2.0-1/bin/riscv-none-elf-size ~/bin/riscv32-
 export PATH="$HOME/bin:$PATH"
 echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
 
-#just verification (should be no errors)
 riscv32-unknown-elf-gcc --version
 ```
 
@@ -32,7 +32,6 @@ riscv32-unknown-elf-gcc --version
 
 ### Issue #1: chmod doesn't work
 
-**What is seen**
 ```bash
 chmod +x build.sh
 chmod: changing permissions of 'build.sh': Operation not permitted
@@ -42,25 +41,22 @@ chmod: changing permissions of 'build.sh': Operation not permitted
 ```bash
 cp -r /mnt/c/Users/Kai/Documents/GitHub/SHA-256 ~/SHA-256
 cd ~/SHA-256/code
-chmod +x build.sh  # works now
+chmod +x build.sh
 ```
 
-**Follow** Never work directly in `/mnt/c/`. Always copy to `~/` first.
+**Rule:** Never work directly in `/mnt/c/`. Always copy to `~/` first.
 
 ---
 
 ### Issue #2: apt-get is just completely broken
 
-**What is seen:**
+**What you see:**
 ```bash
 sudo apt-get install npm
 E: Package 'npm' has no installation candidate
 
 sudo apt-get install build-essential
 E: Package 'build-essential' has no installation candidate
-
-sudo apt-get install gcc
-E: Package 'gcc' has no installation candidate
 ```
 
 Or network errors:
@@ -69,7 +65,7 @@ Err:5 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages
   Error reading from server - read (104: Connection reset by peer)
 ```
 
-**Followw** Don't use apt-get. Download pre-built toolchain instead (see top).
+**Fix:** Don't use apt-get. Download pre-built toolchain instead (see top).
 
 **If you really need apt-get:**
 ```bash
@@ -79,15 +75,19 @@ sudo apt-get update
 
 sudo sed -i 's|http://archive.ubuntu.com|http://us.archive.ubuntu.com|g' /etc/apt/sources.list
 sudo apt-get update
+```
 
+Or restart WSL from PowerShell:
+```powershell
 wsl --shutdown
 wsl
 ```
+
 ---
 
-### Issue #3: RISC-V toolchain doesn't exist in apt MOST COMMON
+### Issue #3: RISC-V toolchain doesn't exist in apt (MOST COMMON)
 
-**What is seen**
+**What you see:**
 ```bash
 sudo apt-get install riscv32-unknown-elf-gcc
 E: Unable to locate package riscv32-unknown-elf-gcc
@@ -96,13 +96,13 @@ sudo apt-get install gcc-riscv64-unknown-elf
 E: Unable to locate package gcc-riscv64-unknown-elf
 ```
 
-**Most likely why this is occuring:** Ubuntu repos don't have this specific toolchain variant.
+**Why:** Ubuntu repos don't have this specific toolchain.
 
 **What doesn't work:**
-- `apt-get install riscv32-unknown-elf-gcc` -> doesn't exist
-- `apt-get install gcc-riscv64-unknown-elf` -> doesn't exist
-- `apt-get install gcc-riscv64-linux-gnu` -> exists but wrong arch/ABI
-- Building from source -> needs gcc which apt-get can't install
+- `apt-get install riscv32-unknown-elf-gcc` → doesn't exist
+- `apt-get install gcc-riscv64-unknown-elf` → doesn't exist
+- `apt-get install gcc-riscv64-linux-gnu` → wrong arch/ABI
+- Building from source → needs gcc which apt can't install
 
 **Fix:** Use pre-built xPack toolchain (see top).
 
@@ -125,7 +125,7 @@ riscv-none-elf-gcc (xPack GNU RISC-V Embedded GCC x86_64) 12.2.0
 
 **Why:** Build script expects `riscv32-unknown-elf-gcc` but xPack provides `riscv-none-elf-gcc`. Same tools, different names.
 
-**Follow** Symlinks (see step 3 at top)
+**Fix:** Symlinks (see step 3 at top)
 
 ---
 
@@ -143,13 +143,14 @@ tar -xzf toolchain.tar.gz
 gzip: stdin: not in gzip format
 tar: Child returned status 1
 ```
+
 **Check what you downloaded:**
 ```bash
 ls -lh ~/toolchain.tar.gz
-#should be around 300MB+
+# Should be around 300MB+, not 1KB
 ```
 
-**Fix:** Use the xPack link at the top. It's current and maintained.
+**Fix:** Use the xPack link at the top.
 
 ---
 
@@ -157,23 +158,25 @@ ls -lh ~/toolchain.tar.gz
 
 **What you see:**
 ```bash
-# After extracting in Windows:
 Error 0x80070522: A required privilege is not held by the client
 ```
 
-**Fix:** Extract in WSL, DO NOT TRY EXTRACING THROUGH WINDOWS RIGHT CLICK
+Or symlinks show as text files.
+
+**Fix:** Extract in WSL, DO NOT extract through Windows right-click
 ```bash
-tar -xzf toolchain.tar.gz  # in WSL
+tar -xzf toolchain.tar.gz
 ```
 
 ---
+
 ### Issue #7: PATH not set
+
 **What you see:**
 ```bash
 riscv32-unknown-elf-gcc --version
 riscv32-unknown-elf-gcc: command not found
 ```
-But you just created the symlinks.
 
 **Why:** `~/bin` isn't in your PATH yet.
 
@@ -181,65 +184,89 @@ But you just created the symlinks.
 ```bash
 export PATH="$HOME/bin:$PATH"
 echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
-```
-
-Then: 
-```bash
 source ~/.bashrc
 ```
+
 ---
 
-## Quick Reference
+## Quick Checks
 
-### Check if toolchain is working
+### Toolchain working?
 ```bash
 riscv32-unknown-elf-gcc --version
 ```
 
-### Verify PATH
+### PATH set?
 ```bash
 echo $PATH
-#should include /home/*user*/bin
+# Should include /home/your-username/bin
 ```
 
-### Check symlinks
+### Symlinks good?
 ```bash
 ls -la ~/bin/
-#should see symlinks pointing to xpack-riscv-none-elf-gcc-*/bin/*
+# Should see symlinks pointing to xpack-riscv-none-elf-gcc-*/bin/*
 ```
 
-### Test compile
+---
+
+## Code Fixes
+
+Your code needs a couple fixes before it'll compile:
+
+### Fix 1: Remove duplicate _start from miner.c
 ```bash
 cd ~/SHA-256/code
+sed -i '/^void _start(void) {$/,/^}$/d' miner.c
+```
+
+### Fix 2: Add string_utils.c (memset/memcpy for bare-metal)
+```bash
+cat > string_utils.c << 'EOF'
+void* memset(void* dest, int c, unsigned long n) {
+    unsigned char* d = (unsigned char*)dest;
+    while (n--) *d++ = (unsigned char)c;
+    return dest;
+}
+
+void* memcpy(void* dest, const void* src, unsigned long n) {
+    unsigned char* d = (unsigned char*)dest;
+    const unsigned char* s = (const unsigned char*)src;
+    while (n--) *d++ = *s++;
+    return dest;
+}
+EOF
+```
+
+### Fix 3: Update build.sh
+```bash
+sed -i '/echo "✓ start.o"/a\\necho -e "${YELLOW}Compiling string utilities...${NC}"\n$CC -march=$ARCH -mabi=$ABI -O2 -c string_utils.c -o string_utils.o\necho "✓ string_utils.o"' build.sh
+
+sed -i 's/start.o miner.o -o miner.elf/start.o string_utils.o miner.o -o miner.elf/' build.sh
+```
+
+### Build
+```bash
 ./build.sh
 ```
+
+Should compile now.
 
 ---
 
 ## Common Mistakes
 
- **Working in `/mnt/c/`**
--> Files can't be chmod'd
-
- **Trying to use apt-get for toolchain**
--> Packages don't exist or apt is broken
-
- **Extracting tar.gz in Windows**
--> Breaks symlinks
-
- **Not creating symlinks**
--> Build script can't find tools
-
- **Forgetting to add PATH to .bashrc**
--> Works in current terminal but not after reboot
+❌ Working in `/mnt/c/` → Files can't be chmod'd  
+❌ Using apt-get for toolchain → Packages don't exist  
+❌ Extracting in Windows → Breaks symlinks  
+❌ Skipping symlinks → Build script can't find tools  
+❌ Not adding PATH to .bashrc → Doesn't persist after restart  
 
 ---
 
-## Alternative Toolchains (if xPack fails)
+## Alternative: Build from Source (last resort)
 
-
-### Build from source (last resort)
-If apt-get IS working (just verify first):
+Only if apt-get IS working:
 ```bash
 sudo apt-get install autoconf automake autotools-dev curl python3 libmpc-dev \
     libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf \
@@ -251,8 +278,9 @@ cd riscv-gnu-toolchain
 sudo make
 export PATH="/opt/riscv/bin:$PATH"
 ```
-Can take a bit to build
-'''
+
+Takes 30-60 minutes to build.
+
 ---
 
 ## Links
