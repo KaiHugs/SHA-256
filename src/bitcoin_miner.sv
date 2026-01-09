@@ -1,8 +1,6 @@
 //Author: Kai Hughes | 2025 
 //Bitcoin Mining Controller controlling nonce attemps
 
-//Legacy File -- won't be used on compilation
-
 module bitcoin_miner (
     input  logic clk,
     input  logic rst_n,  
@@ -59,13 +57,10 @@ module bitcoin_miner (
     
     logic [1:0] hash_stage;
     
-    logic [255:0] hash_after_block0;
-    logic [255:0] hash_after_block1;
-    
     always_comb begin
         header = header_template;
         //insert nonce at bytes 76-79
-        //bitcoin uses little-endian, so byte 76 gets bits [7:0] TODO requires heavy verification and memory dump
+        //bitcoin uses little-endian, so byte 76 gets bits [7:0]
         header[639:608] = {nonce[7:0], nonce[15:8], nonce[23:16], nonce[31:24]};
     end
         //block 0: First 512 bits (64 bytes)
@@ -86,8 +81,6 @@ module bitcoin_miner (
             nonce <= '0;
             nonce_out <= '0;
             hash_out <= '0;
-            hash_after_block0 <= '0;
-            hash_after_block1 <= '0;
             hash_stage <= '0;
             
             hasher_start <= 1'b0;
@@ -123,7 +116,7 @@ module bitcoin_miner (
                     state <= HASH;
                     hash_stage <= 2'b00;
                     
-                    //ashing block 0 
+                    //hashing block 0 
                     hasher_block_in <= block0;
                     hasher_init_hash <= 1'b1;
                     hasher_start <= 1'b1;
@@ -134,8 +127,7 @@ module bitcoin_miner (
                     if (hasher_done) begin
                         case (hash_stage)
                             2'b00: begin
-                                //done block 0 
-                                hash_after_block0 <= hasher_hash_out;
+                                //done block 0, move to block 1
                                 hash_stage <= 2'b01;
                                 
                                 //block 1 
@@ -147,60 +139,57 @@ module bitcoin_miner (
                             
                             2'b01: begin
                                 //done block 1 and first iteration of SHA-256
-                                hash_after_block1 <= hasher_hash_out;
                                 hash_stage <= 2'b10;
                                 
                                 //[32-byte hash] [0x80] [zeros] [len=256=0x100]
                                 hasher_block_in <= {hasher_hash_out, 8'h80, 184'h0, 64'h0000000000000100};
                                 hasher_init_hash <= 1'b1;
+                                hasher_hash_in <= '0;
                                 hasher_start <= 1'b1;
                             end
                             
                             2'b10: begin
-                                //second interation done
+                                //final hash done
+                                hash_out <= hasher_hash_out;
                                 state <= CHECK;
                             end
-                            
-                            default: state <= IDLE;
                         endcase
                     end
                 end
                 
                 CHECK: begin
-                    //comoraring hash with target
-                    if (hasher_hash_out < target) begin
+                    if (hash_out < target) begin
                         state <= FOUND_STATE;
+                        found <= 1'b1;
                         nonce_out <= nonce;
-                        hash_out <= hasher_hash_out;
                     end else begin
                         state <= INCREMENT;
                     end
                 end
                 
                 INCREMENT: begin
-                    if (nonce == max_nonce) begin
+                    if (nonce >= max_nonce) begin
                         state <= EXHAUSTED_STATE;
+                        exhausted <= 1'b1;
                     end else begin
-                        // Try next nonce
-                        nonce <= nonce + 1'b1;
+                        nonce <= nonce + 1;
                         state <= BUILD_BLOCKS;
                     end
                 end
                 
                 FOUND_STATE: begin
-                    found <= 1'b1;
                     busy <= 1'b0;
-                    state <= IDLE;
+                    if (!start) begin
+                        state <= IDLE;
+                    end
                 end
                 
                 EXHAUSTED_STATE: begin
-                    exhausted <= 1'b1;
                     busy <= 1'b0;
-                    state <= IDLE;
+                    if (!start) begin
+                        state <= IDLE;
+                    end
                 end
-                
-                default: state <= IDLE;
-                
             endcase
         end
     end

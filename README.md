@@ -1,4 +1,4 @@
-# Bitcoin Miner HDL Project
+# Bitcoin Miner HDL 
 
 Hardware implementation of a Bitcoin miner in SystemVerilog. Not practical for actual mining (wayyy too slow), but shows how the algorithm works at the hardware level. I <3 HDL.
 
@@ -169,8 +169,8 @@ SHA-256 works on 512-bit blocks, so 80 bytes = 640 bits needs two blocks. Block 
 Looking to create a general-purpose research platform for FPGA-based acceleration. The current RISC-V + SHA-256 architecture provides a research-orientated foundation for studying hardware/software design patterns. 
  
 Working Towards:
-1. Templating the accelerator interface to support multiple algorithms (AES, RSA, and eventually ML inference) beyond SHA-256, enabling comparative studies of different acceleration strategies
-2. Developing as an open-source SmartNIC platform for in-network computing research, where the SHA-256 core could perform DDoS detection, or cache key generation at line-rate
+1. Templating the interface to support multiple algorithms (AES, RSA, and eventually ML inference) beyond SHA-256, to allow for comparative studies of different acceleration strategies
+2. Developing as an open-source SmartNIC platform for in-network computing research, where the SHA-256 core is used as a reusable in-network hashing block.
 
 ## Credits
 

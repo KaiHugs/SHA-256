@@ -24,7 +24,7 @@ void* memcpy(void* dest, const void* src, unsigned long n) {
 }
 EOF
 
-sed -i '/echo "✓ start.o"/a\\necho -e "${YELLOW}Compiling string utilities...${NC}"\n$CC -march=$ARCH -mabi=$ABI -O2 -c string_utils.c -o string_utils.o\necho "✓ string_utils.o"' build.sh
+sed -i '/echo " start.o"/a\\necho -e "${YELLOW}Compiling string utilities...${NC}"\n$CC -march=$ARCH -mabi=$ABI -O2 -c string_utils.c -o string_utils.o\necho " string_utils.o"' build.sh
 
 sed -i 's/start.o miner.o -o miner.elf/start.o string_utils.o miner.o -o miner.elf/' build.sh
 

@@ -1,0 +1,36 @@
+
+State Machine - |risc_miner_interface|bitcoin_miner:miner|state
+Name state.EXHAUSTED_STATE state.FOUND_STATE state.INCREMENT state.CHECK state.HASH state.BUILD_BLOCKS state.LOAD state.IDLE 
+state.IDLE 0 0 0 0 0 0 0 0 
+state.LOAD 0 0 0 0 0 0 1 1 
+state.BUILD_BLOCKS 0 0 0 0 0 1 0 1 
+state.HASH 0 0 0 0 1 0 0 1 
+state.CHECK 0 0 0 1 0 0 0 1 
+state.INCREMENT 0 0 1 0 0 0 0 1 
+state.FOUND_STATE 0 1 0 0 0 0 0 1 
+state.EXHAUSTED_STATE 1 0 0 0 0 0 0 1 
+
+State Machine - |risc_miner_interface|bitcoin_miner:miner|sha256:hasher|state
+Name state.FINAL state.ROUND state.INIT state.IDLE state.DONE_STATE 
+state.IDLE 0 0 0 0 0 
+state.INIT 0 0 1 1 0 
+state.ROUND 0 1 0 1 0 
+state.FINAL 1 0 0 1 0 
+state.DONE_STATE 0 0 0 1 1 
+
+State Machine - |risc_miner_interface|picorv32:cpu|cpu_state
+Name cpu_state.cpu_state_trap cpu_state.cpu_state_fetch cpu_state.cpu_state_ld_rs1 cpu_state.cpu_state_ld_rs2 cpu_state.cpu_state_exec cpu_state.cpu_state_shift cpu_state.cpu_state_stmem cpu_state.cpu_state_ldmem 
+cpu_state.cpu_state_trap 0 0 0 0 0 0 0 0 
+cpu_state.cpu_state_stmem 1 0 0 0 0 0 1 0 
+cpu_state.cpu_state_shift 1 0 0 0 0 1 0 0 
+cpu_state.cpu_state_exec 1 0 0 0 1 0 0 0 
+cpu_state.cpu_state_ld_rs2 1 0 0 1 0 0 0 0 
+cpu_state.cpu_state_ld_rs1 1 0 1 0 0 0 0 0 
+cpu_state.cpu_state_fetch 1 1 0 0 0 0 0 0 
+cpu_state.cpu_state_ldmem 1 0 0 0 0 0 0 1 
+
+State Machine - |risc_miner_interface|picorv32:cpu|mem_wordsize
+Name mem_wordsize.00 mem_wordsize.10 mem_wordsize.01 
+mem_wordsize.00 0 0 0 
+mem_wordsize.01 1 0 1 
+mem_wordsize.10 1 1 0 
