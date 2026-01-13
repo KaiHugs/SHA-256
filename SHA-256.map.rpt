@@ -1,5 +1,5 @@
 Analysis & Synthesis report for SHA-256
-Fri Jan 09 12:49:15 2026
+Sun Jan 11 18:38:44 2026
 Quartus Prime Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
 
 
@@ -64,7 +64,7 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                  ;
 +---------------------------------+---------------------------------------------+
-; Analysis & Synthesis Status     ; Successful - Fri Jan 09 12:49:09 2026       ;
+; Analysis & Synthesis Status     ; Successful - Sun Jan 11 18:38:40 2026       ;
 ; Quartus Prime Version           ; 19.1.0 Build 670 09/22/2019 SJ Lite Edition ;
 ; Revision Name                   ; SHA-256                                     ;
 ; Top-level Entity Name           ; risc_miner_interface                        ;
@@ -179,26 +179,26 @@ https://fpgasoftware.intel.com/eula.
 ; Number detected on machine ; 16          ;
 ; Maximum allowed            ; 16          ;
 ;                            ;             ;
-; Average used               ; 5.90        ;
+; Average used               ; 5.43        ;
 ; Maximum used               ; 16          ;
 ;                            ;             ;
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
-;     Processor 2            ;  32.7%      ;
-;     Processor 3            ;  32.7%      ;
-;     Processor 4            ;  32.7%      ;
-;     Processor 5            ;  32.7%      ;
-;     Processor 6            ;  32.7%      ;
-;     Processor 7            ;  32.7%      ;
-;     Processor 8            ;  32.7%      ;
-;     Processor 9            ;  32.7%      ;
-;     Processor 10           ;  32.7%      ;
-;     Processor 11           ;  32.7%      ;
-;     Processor 12           ;  32.7%      ;
-;     Processor 13           ;  32.7%      ;
-;     Processor 14           ;  32.7%      ;
-;     Processor 15           ;  32.7%      ;
-;     Processor 16           ;  32.7%      ;
+;     Processor 2            ;  29.6%      ;
+;     Processor 3            ;  29.6%      ;
+;     Processor 4            ;  29.6%      ;
+;     Processor 5            ;  29.6%      ;
+;     Processor 6            ;  29.6%      ;
+;     Processor 7            ;  29.6%      ;
+;     Processor 8            ;  29.6%      ;
+;     Processor 9            ;  29.6%      ;
+;     Processor 10           ;  29.6%      ;
+;     Processor 11           ;  29.6%      ;
+;     Processor 12           ;  29.6%      ;
+;     Processor 13           ;  29.6%      ;
+;     Processor 14           ;  29.6%      ;
+;     Processor 15           ;  29.6%      ;
+;     Processor 16           ;  29.6%      ;
 +----------------------------+-------------+
 
 
@@ -1424,7 +1424,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 +----------------+--------------+
 ; Partition Name ; Elapsed Time ;
 +----------------+--------------+
-; Top            ; 00:03:31     ;
+; Top            ; 00:03:10     ;
 +----------------+--------------+
 
 
@@ -1434,7 +1434,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
-    Info: Processing started: Fri Jan 09 12:44:20 2026
+    Info: Processing started: Sun Jan 11 18:34:12 2026
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off SHA-256 -c SHA-256
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 16 of the 16 processors detected
@@ -1667,10 +1667,10 @@ Info (21057): Implemented 197767 device resources after synthesis - the final re
     Info (21064): Implemented 64 RAM segments
     Info (21065): Implemented 1 PLLs
 Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 81 warnings
-    Info: Peak virtual memory: 5962 megabytes
-    Info: Processing ended: Fri Jan 09 12:49:15 2026
-    Info: Elapsed time: 00:04:55
-    Info: Total CPU time (on all processors): 00:07:51
+    Info: Peak virtual memory: 5963 megabytes
+    Info: Processing ended: Sun Jan 11 18:38:45 2026
+    Info: Elapsed time: 00:04:33
+    Info: Total CPU time (on all processors): 00:07:18
 
 
 +------------------------------------------+

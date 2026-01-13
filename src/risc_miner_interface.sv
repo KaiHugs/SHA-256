@@ -1,23 +1,18 @@
 /*Author: Kai Hughes | 2025
-Interface with Miner Integration
+Interface with Miner Integration - External RAM testing
 
+Memory Map:
 0x0000_0000 - 0x0000_3FFF: RAM (16KB)
 0x8000_0000: Miner Control Register
-bit 0: start
-bit 1: busy (RO)
-bit 2: found (RO)
-bit 3: exhausted (RO)
+    bit 0: start
+    bit 1: busy (RO)
+    bit 2: found (RO)
+    bit 3: exhausted (RO)
 0x8000_0004: Max Nonce
 0x8000_0008: Nonce Output (RO)
-0x8000_000C: Hash Output Word 0 (RO)
-0x8000_0010: Hash Output Word 1 (RO)
-
-0x8000_0028: Hash Output Word 7 (RO)
-0x8000_0030: Target Word 0
-0x8000_0034: Target Word 1
-
-0x8000_004C: Target Word 7
-0x8000_0050-0x8000_009F: Header stuff
+0x8000_000C-0x8000_0028: Hash Output Words 0-7 (RO)
+0x8000_0030-0x8000_004C: Target Words 0-7
+0x8000_0050-0x8000_009C: Header Template (20 words)
 */
 
 module risc_miner_interface (
@@ -60,7 +55,7 @@ module risc_miner_interface (
         end
     end
 
-    //cpu bus
+
     logic [31:0] mem_addr, mem_wdata, mem_rdata;
     logic [3:0]  mem_wstrb;
     logic mem_valid, mem_ready;
@@ -75,16 +70,15 @@ module risc_miner_interface (
         .mem_valid(mem_valid),
         .mem_ready(mem_ready)
     );
-
-    //miner regs
+ 
     logic miner_start;
     logic miner_busy;
     logic miner_found;
     logic miner_exhausted;
 
     logic [31:0] max_nonce_reg;
-    logic [639:0]header_template_reg;
-    logic [255:0]target_reg;
+    logic [639:0] header_template_reg;
+    logic [255:0] target_reg;
 
     logic [31:0] nonce_out;
     logic [255:0] hash_out;
@@ -103,33 +97,47 @@ module risc_miner_interface (
         .hash_out(hash_out)
     );
 
+ 
     logic ram_sel, miner_sel;
 
     always_comb begin
         ram_sel = (mem_addr[31:16] == 16'h0000);
-        miner_sel =(mem_addr[31:16] == 16'h8000);
+        miner_sel = (mem_addr[31:16] == 16'h8000);
     end
+ 
+    logic [31:0] ram_rdata;
+    logic [11:0] ram_addr;     
+    logic ram_wren;
+    logic [31:0] ram_q;
+    
+    assign ram_addr = mem_addr[13:2];  
+    assign ram_wren = ram_sel && mem_valid && |mem_wstrb;
+    
+    // RAM using altsyncram - TEST 1 NO EXTERNAL PROGRAM USING QUARTUS'
+    altsyncram #(
+        .operation_mode("SINGLE_PORT"),
+        .width_a(32),
+        .widthad_a(12),
+        .numwords_a(4096),
+        .outdata_reg_a("UNREGISTERED"),
+        .init_file("program.hex"),
+        .lpm_hint("ENABLE_RUNTIME_MOD=NO"),
+        .lpm_type("altsyncram"),
+        .read_during_write_mode_port_a("NEW_DATA_NO_NBE_READ"),
+        .width_byteena_a(4)
+    ) ram_inst (
+        .clock0(clk_100),
+        .address_a(ram_addr),
+        .data_a(mem_wdata),
+        .wren_a(ram_wren),
+        .byteena_a(mem_wstrb),
+        .q_a(ram_q)
+    );
+    
+    assign ram_rdata = ram_q;
 
-    //16kb
-    logic [31:0] ram [0:4095];
-    logic [31:0]ram_rdata;
-
-    initial begin
-        $readmemh("program.hex", ram);
-    end
-
-    always_ff @(posedge clk_100) begin
-        if (ram_sel && mem_valid) begin
-            if (mem_wstrb[0]) ram[mem_addr[13:2]][7:0] <= mem_wdata[7:0];
-            if (mem_wstrb[1]) ram[mem_addr[13:2]][15:8] <= mem_wdata[15:8];
-            if (mem_wstrb[2]) ram[mem_addr[13:2]][23:16] <= mem_wdata[23:16];
-            if (mem_wstrb[3]) ram[mem_addr[13:2]][31:24] <= mem_wdata[31:24];
-            ram_rdata <= ram[mem_addr[13:2]];
-        end
-    end
-
-    //miner mmio
-    logic [31:0] miner_rdata;
+     // Miner MMIO Registers
+     logic [31:0] miner_rdata;
 
     always_ff @(posedge clk_100 or negedge rst_n) begin
         if (!rst_n) begin
@@ -145,7 +153,7 @@ module risc_miner_interface (
                     8'h00: if (mem_wdata[0]) miner_start <= 1'b1;
                     8'h04: max_nonce_reg <= mem_wdata;
 
-                    8'h30: target_reg[255:224] <= mem_wdata;
+                     8'h30: target_reg[255:224] <= mem_wdata;
                     8'h34: target_reg[223:192] <= mem_wdata;
                     8'h38: target_reg[191:160] <= mem_wdata;
                     8'h3c: target_reg[159:128] <= mem_wdata;
@@ -154,7 +162,7 @@ module risc_miner_interface (
                     8'h48: target_reg[63:32] <= mem_wdata;
                     8'h4c: target_reg[31:0] <= mem_wdata;
 
-                    8'h50: header_template_reg[639:608] <= mem_wdata;
+                     8'h50: header_template_reg[639:608] <= mem_wdata;
                     8'h54: header_template_reg[607:576] <= mem_wdata;
                     8'h58: header_template_reg[575:544] <= mem_wdata;
                     8'h5c: header_template_reg[543:512] <= mem_wdata;
@@ -179,7 +187,7 @@ module risc_miner_interface (
         end
     end
 
-    always_comb begin
+     always_comb begin
         case (mem_addr[7:0])
             8'h00: miner_rdata = {28'h0, miner_exhausted, miner_found, miner_busy, 1'b0};
             8'h04: miner_rdata = max_nonce_reg;
@@ -195,7 +203,7 @@ module risc_miner_interface (
             default: miner_rdata = 32'h0;
         endcase
     end
-
+ 
     always_comb begin
         if (ram_sel) begin
             mem_rdata = ram_rdata;
