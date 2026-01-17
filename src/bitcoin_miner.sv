@@ -1,5 +1,5 @@
 //Author: Kai Hughes | 2025 
-//Bitcoin Mining Controller controlling nonce attemps
+//Bitcoin Mining Controller controlling nonce attempts
 
 module bitcoin_miner (
     input  logic clk,
@@ -59,11 +59,12 @@ module bitcoin_miner (
     
     always_comb begin
         header = header_template;
-        //insert nonce at bytes 76-79
-        //bitcoin uses little-endian, so byte 76 gets bits [7:0]
-        header[639:608] = {nonce[7:0], nonce[15:8], nonce[23:16], nonce[31:24]};
+        //insert nonce at bytes 76-79 (bits [31:0])
+        //bitcoin uses little-endian, so byte 76 gets nonce[7:0]
+        header[31:0] = {nonce[7:0], nonce[15:8], nonce[23:16], nonce[31:24]};
     end
-        //block 0: First 512 bits (64 bytes)
+    
+    //block 0: First 512 bits (64 bytes)
     //block 1: Remaining 128 bits (16 bytes) + padding
     always_comb begin
         block0 = header[639:128];  // First 64 bytes
