@@ -257,11 +257,11 @@ Should compile now.
 
 ## Common Mistakes
 
-❌ Working in `/mnt/c/` → Files can't be chmod'd  
-❌ Using apt-get for toolchain → Packages don't exist  
-❌ Extracting in Windows → Breaks symlinks  
-❌ Skipping symlinks → Build script can't find tools  
-❌ Not adding PATH to .bashrc → Doesn't persist after restart  
+ Working in `/mnt/c/` → Files can't be chmod'd  
+ Using apt-get for toolchain → Packages don't exist  
+ Extracting in Windows → Breaks symlinks  
+ Skipping symlinks → Build script can't find tools  
+ Not adding PATH to .bashrc → Doesn't persist after restart  
 
 ---
 
