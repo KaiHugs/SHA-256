@@ -155,12 +155,12 @@ int wait_for_result(void) {
     return (MINER_CTRL & CTRL_FOUND) != 0;
 }
 
-void read_hash(unsigned char* hash_out) {
-    unsigned int* words = (unsigned int*)hash_out;
-    for (int i = 0; i < 8; i++) {
-        words[i] = MINER_HASH_OUT(i);
-    }
-}
+// void read_hash(unsigned char* hash_out) {
+//     unsigned int* words = (unsigned int*)hash_out;
+//     for (int i = 0; i < 8; i++) {
+//         words[i] = MINER_HASH_OUT(i);
+//     }
+// }
 
 void mine_genesis_block(void) {
     bitcoin_header_t genesis = {

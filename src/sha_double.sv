@@ -13,9 +13,10 @@ module sha256_double (
     output logic [255:0] hash_out       // Final double-hashed result
 );
 
-    typedef enum logic [1:0] {
+    typedef enum logic [2:0] {
         IDLE,
         HASH1,
+        HASH1_WAIT,
         HASH2,
         DONE_STATE
     } state_t;
@@ -91,12 +92,20 @@ module sha256_double (
                     if (core_done) begin
                         hash1 <= core_hash_out;
                         
-                        state <= HASH2; //next hash
+                        state <= HASH1_WAIT;
                         
-                        core_block_in <= hash2_block;
-                        core_init_hash <= 1'b1; 
-                        core_start <= 1'b1;
+                        // core_block_in <= hash2_block;
+                        // core_init_hash <= 1'b1; 
+                        // core_start <= 1'b1;
                     end
+                end
+                
+                HASH1_WAIT: begin
+                    state <= HASH2;
+                    
+                    core_block_in <= hash2_block;
+                    core_init_hash <= 1'b1;
+                    core_start <= 1'b1;
                 end
                 
                 HASH2: begin

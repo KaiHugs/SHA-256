@@ -7,10 +7,10 @@ module board_miner (
     input logic [1:0] KEY,             
 
     //switches for difficulty
-    input logic [9:0] SW,             
+    input logic[9:0] SW,             
     
-    output logic [9:0] LEDR,            
-    output logic [7:0] LEDG             
+    output logic[9:0] LEDR,            
+    output logic[7:0] LEDG             
 );
 
     
@@ -30,12 +30,22 @@ bitcoin_miner miner (
     
 
     logic reset_n;
-    logic start_button;
+    // logic start_button;
+    
+    // always_ff @(posedge CLOCK_50) begin
+    //     reset_n <= KEY[0];           
+    //     start_button <= ~KEY[1];
+    // end
+    
+    logic [2:0] key0_sync;
+    logic [2:0] key1_sync;
     
     always_ff @(posedge CLOCK_50) begin
-        reset_n <= KEY[0];           
-        start_button <= ~KEY[1];     //active low
+        key0_sync <= {key0_sync[1:0], KEY[0]};
+        key1_sync <= {key1_sync[1:0], ~KEY[1]};
     end
+    
+    assign reset_n = key0_sync[2];
     
     logic start_pulse;
     logic start_button_prev;
@@ -45,8 +55,8 @@ bitcoin_miner miner (
             start_button_prev <= 1'b0;
             start_pulse <= 1'b0;
         end else begin
-            start_button_prev <= start_button;
-            start_pulse <= start_button && !start_button_prev;  
+            start_button_prev <= key1_sync[2];
+            start_pulse <= key1_sync[2] && !start_button_prev;
         end
     end
     

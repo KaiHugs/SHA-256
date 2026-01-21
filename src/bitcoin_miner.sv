@@ -15,11 +15,13 @@ module bitcoin_miner (
     output logic [255:0] hash_out           
 );
 
-    typedef enum logic [2:0] {
+    typedef enum logic [3:0] {
         IDLE,
         LOAD,
         BUILD_BLOCKS,
         HASH,
+        HASH_WAIT1,
+        HASH_WAIT2,
         CHECK,
         INCREMENT,
         FOUND_STATE,
@@ -128,34 +130,49 @@ module bitcoin_miner (
                     if (hasher_done) begin
                         case (hash_stage)
                             2'b00: begin
-                                //done block 0, move to block 1
                                 hash_stage <= 2'b01;
+                                state <= HASH_WAIT1;
                                 
-                                //block 1 
-                                hasher_block_in <= block1;
-                                hasher_hash_in <= hasher_hash_out;
-                                hasher_init_hash <= 1'b0;
-                                hasher_start <= 1'b1;
+                                // hasher_block_in <= block1;
+                                // hasher_hash_in <= hasher_hash_out;
+                                // hasher_init_hash <= 1'b0;
+                                // hasher_start <= 1'b1;
                             end
                             
                             2'b01: begin
-                                //done block 1 and first iteration of SHA-256
                                 hash_stage <= 2'b10;
+                                state <= HASH_WAIT2;
                                 
-                                //[32-byte hash] [0x80] [zeros] [len=256=0x100]
-                                hasher_block_in <= {hasher_hash_out, 8'h80, 184'h0, 64'h0000000000000100};
-                                hasher_init_hash <= 1'b1;
-                                hasher_hash_in <= '0;
-                                hasher_start <= 1'b1;
+                                // hasher_block_in <= {hasher_hash_out, 8'h80, 184'h0, 64'h0000000000000100};
+                                // hasher_init_hash <= 1'b1;
+                                // hasher_hash_in <= '0;
+                                // hasher_start <= 1'b1;
                             end
                             
                             2'b10: begin
-                                //final hash done
                                 hash_out <= hasher_hash_out;
                                 state <= CHECK;
                             end
                         endcase
                     end
+                end
+                
+                HASH_WAIT1: begin
+                    state <= HASH;
+                    
+                    hasher_block_in <= block1;
+                    hasher_hash_in <= hasher_hash_out;
+                    hasher_init_hash <= 1'b0;
+                    hasher_start <= 1'b1;
+                end
+                
+                HASH_WAIT2: begin
+                    state <= HASH;
+                    
+                    hasher_block_in <= {hasher_hash_out, 8'h80, 184'h0, 64'h0000000000000100};
+                    hasher_init_hash <= 1'b1;
+                    hasher_hash_in <= '0;
+                    hasher_start <= 1'b1;
                 end
                 
                 CHECK: begin
@@ -190,6 +207,13 @@ module bitcoin_miner (
                     if (!start) begin
                         state <= IDLE;
                     end
+                end
+                
+                default: begin
+                    state <= IDLE;
+                    busy <= 1'b0;
+                    found <= 1'b0;
+                    exhausted <= 1'b0;
                 end
             endcase
         end
