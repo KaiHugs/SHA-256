@@ -3,69 +3,79 @@
 # Author: Kai Hughes | 2025
 # ==============================================================================
 
-# ==============================================================================
-# Clock Definitions
-# ==============================================================================
+# Timing Constraints for Bitcoin Miner on DE2-115
+# Save as: bitcoin_miner_de2115.sdc
 
-# Create base clock - 50MHz input from board oscillator
-create_clock -period 20.000 -name CLOCK_50 [get_ports CLOCK_50]
+# Create base clock from 50 MHz oscillator
+create_clock -name CLOCK_50 -period 20.000 [get_ports CLOCK_50]
 
-# Derive PLL clocks automatically - this creates the 100MHz clock
-derive_pll_clocks
+# Derive PLL clocks (100 MHz system clock)
+derive_pll_clocks -create_base_clocks
 
-# Alternative manual definition if derive_pll_clocks doesn't work:
-# create_generated_clock -name clk_100 -source [get_ports CLOCK_50] \
-#     -multiply_by 2 [get_pins {pll|altpll_component|auto_generated|pll1|clk[0]}]
-
-# ==============================================================================
-# Clock Groups and Relationships
-# ==============================================================================
-
-# Set async relationship between input clock and PLL output
-# This prevents timing analysis across clock domains
-set_clock_groups -asynchronous \
-    -group {CLOCK_50} \
-    -group [get_clocks {pll|altpll_component|auto_generated|*}]
-
-# ==============================================================================
-# Input Constraints
-# ==============================================================================
-
-# Reset input - asynchronous, set false path
-set_false_path -from [get_ports rst_n_raw] -to [all_registers]
-set_false_path -from [get_registers {*reset_counter*}] -to [all_registers]
-
-# ==============================================================================
-# Output Constraints
-# ==============================================================================
-
-# LED outputs - don't need tight timing
-set_false_path -to [get_ports {leds[*]}]
-
-# ==============================================================================
-# Timing Exceptions
-# ==============================================================================
-
-# Allow additional clock uncertainty for PLL outputs
+# Calculate clock uncertainty
 derive_clock_uncertainty
 
-# ==============================================================================
-# Additional Constraints for Performance
-# ==============================================================================
+# Set false paths for asynchronous inputs
+set_false_path -from [get_ports KEY[*]] -to [all_clocks]
+set_false_path -from [get_ports SW[*]] -to [all_clocks]
 
-# Set max delay for combinational paths if needed
-# set_max_delay -from [all_registers] -to [all_registers] 10.0
+# Set false paths for LED outputs (no timing requirement)
+set_false_path -from [all_clocks] -to [get_ports LEDR[*]]
+set_false_path -from [all_clocks] -to [get_ports LEDG[*]]
+set_false_path -from [all_clocks] -to [get_ports HEX*]
 
-# Multicycle paths (if any critical paths need relaxation)
-# Example: If SHA-256 computation is multi-cycle
-# set_multicycle_path -from [get_registers {*sha256*}] -to [get_registers {*sha256*}] -setup 2
-# set_multicycle_path -from [get_registers {*sha256*}] -to [get_registers {*sha256*}] -hold 1
+# SDRAM timing constraints
+# Reference clock for SDRAM
+set sdram_clk [get_clocks {pll|altpll_component|auto_generated|pll1|clk[0]}]
 
-# ==============================================================================
-# Notes
-# ==============================================================================
-# - The PLL generates 100MHz from the 50MHz input
-# - All internal logic runs at 100MHz
-# - Reset is asynchronous and properly synchronized
-# - LEDs don't need timing constraints as they're for display only
-# ===============================
+# SDRAM output delays
+# Setup time: 1.5ns, Hold time: -0.8ns (typical values)
+set_output_delay -clock $sdram_clk -max 1.5 [get_ports DRAM_ADDR[*]]
+set_output_delay -clock $sdram_clk -min -0.8 [get_ports DRAM_ADDR[*]]
+
+set_output_delay -clock $sdram_clk -max 1.5 [get_ports DRAM_BA[*]]
+set_output_delay -clock $sdram_clk -min -0.8 [get_ports DRAM_BA[*]]
+
+set_output_delay -clock $sdram_clk -max 1.5 [get_ports DRAM_CAS_N]
+set_output_delay -clock $sdram_clk -min -0.8 [get_ports DRAM_CAS_N]
+
+set_output_delay -clock $sdram_clk -max 1.5 [get_ports DRAM_RAS_N]
+set_output_delay -clock $sdram_clk -min -0.8 [get_ports DRAM_RAS_N]
+
+set_output_delay -clock $sdram_clk -max 1.5 [get_ports DRAM_WE_N]
+set_output_delay -clock $sdram_clk -min -0.8 [get_ports DRAM_WE_N]
+
+set_output_delay -clock $sdram_clk -max 1.5 [get_ports DRAM_CS_N]
+set_output_delay -clock $sdram_clk -min -0.8 [get_ports DRAM_CS_N]
+
+set_output_delay -clock $sdram_clk -max 1.5 [get_ports DRAM_DQM[*]]
+set_output_delay -clock $sdram_clk -min -0.8 [get_ports DRAM_DQM[*]]
+
+set_output_delay -clock $sdram_clk -max 1.5 [get_ports DRAM_CKE]
+set_output_delay -clock $sdram_clk -min -0.8 [get_ports DRAM_CKE]
+
+# SDRAM bidirectional data timing
+# CAS latency = 3, so data valid after 3 clocks (~30ns at 100MHz)
+# tAC (access time) = 5.4ns max
+set_input_delay -clock $sdram_clk -max 5.4 [get_ports DRAM_DQ[*]]
+set_input_delay -clock $sdram_clk -min 2.5 [get_ports DRAM_DQ[*]]
+
+set_output_delay -clock $sdram_clk -max 1.5 [get_ports DRAM_DQ[*]]
+set_output_delay -clock $sdram_clk -min -0.8 [get_ports DRAM_DQ[*]]
+
+# Multicycle paths for SDRAM operations
+# Read operations take 3 cycles (CAS latency)
+set_multicycle_path -from $sdram_clk -to [get_ports DRAM_DQ[*]] -setup 2
+set_multicycle_path -from $sdram_clk -to [get_ports DRAM_DQ[*]] -hold 1
+
+# Cut timing paths between unrelated clock domains (if any)
+# set_clock_groups -asynchronous -group {CLOCK_50} -group {$sdram_clk}
+
+# Maximum delay for combinational logic
+set_max_delay -from [all_inputs] -to [all_outputs] 20.0
+
+# Optimize for speed
+set_global_assignment -name OPTIMIZATION_MODE "AGGRESSIVE PERFORMANCE"
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
+set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM

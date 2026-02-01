@@ -2,7 +2,7 @@
 Interface with Miner Integration - External RAM testing
 
 Memory Map:
-0x0000_0000 - 0x0000_3FFF: RAM (16KB)
+0x0000_0000 - 0x0000_FFFF: SDRAM (64KB)
 0x8000_0000: Miner Control Register
     bit 0: start
     bit 1: busy (RO)
@@ -17,9 +17,25 @@ Memory Map:
 
 module risc_miner_interface (
     input  logic CLOCK_50,
-    input  logic rst_n_raw,
-    output logic [9:0] leds
+    input  logic [3:0] KEY,
+    
+    output logic [17:0] LEDR,
+    output logic [8:0] LEDG,
+    
+    output logic [12:0] DRAM_ADDR,
+    output logic [1:0]  DRAM_BA,
+    output logic        DRAM_CAS_N,
+    output logic        DRAM_CKE,
+    output logic        DRAM_CLK,
+    output logic        DRAM_CS_N,
+    inout  wire  [15:0] DRAM_DQ,
+    output logic [1:0]  DRAM_DQM,
+    output logic        DRAM_RAS_N,
+    output logic        DRAM_WE_N
 );
+
+    logic rst_n_raw;
+    assign rst_n_raw = KEY[0];
 
     logic clk_100;
     logic pll_locked;
@@ -60,7 +76,11 @@ module risc_miner_interface (
     logic [3:0]  mem_wstrb;
     logic mem_valid, mem_ready;
 
-    picorv32 cpu (
+    picorv32 #(
+        .ENABLE_MUL(1),
+        .ENABLE_DIV(1),
+        .COMPRESSED_ISA(0)
+    ) cpu (
         .clk(clk_100),
         .resetn(rst_n),
         .mem_addr(mem_addr),
@@ -68,7 +88,9 @@ module risc_miner_interface (
         .mem_rdata(mem_rdata),
         .mem_wstrb(mem_wstrb),
         .mem_valid(mem_valid),
-        .mem_ready(mem_ready)
+        .mem_ready(mem_ready),
+        .mem_instr(),
+        .trap()
     );
  
     logic miner_start;
@@ -105,39 +127,42 @@ module risc_miner_interface (
         miner_sel = (mem_addr[31:16] == 16'h8000);
     end
  
-    logic [31:0] ram_rdata;
-    logic [11:0] ram_addr;     
-    logic ram_wren;
-    logic [31:0] ram_q;
+    logic [31:0] sdram_rdata;
+    logic sdram_ready;
+    logic [15:0] sdram_addr;
+    logic sdram_wren;
+    logic [31:0] sdram_wdata;
+    logic [3:0] sdram_wstrb;
     
-    assign ram_addr = mem_addr[13:2];  
-    assign ram_wren = ram_sel && mem_valid && |mem_wstrb;
+    assign sdram_addr = mem_addr[16:1];
+    assign sdram_wren = ram_sel && mem_valid && |mem_wstrb;
+    assign sdram_wdata = mem_wdata;
+    assign sdram_wstrb = mem_wstrb;
     
-    // RAM using altsyncram - TEST 1 NO EXTERNAL PROGRAM USING QUARTUS'
-    altsyncram #(
-        .operation_mode("SINGLE_PORT"),
-        .width_a(32),
-        .widthad_a(12),
-        .numwords_a(4096),
-        .outdata_reg_a("UNREGISTERED"),
-        .init_file("program.hex"),
-        .lpm_hint("ENABLE_RUNTIME_MOD=NO"),
-        .lpm_type("altsyncram"),
-        .read_during_write_mode_port_a("NEW_DATA_NO_NBE_READ"),
-        .width_byteena_a(4)
-    ) ram_inst (
-        .clock0(clk_100),
-        .address_a(ram_addr),
-        .data_a(mem_wdata),
-        .wren_a(ram_wren),
-        .byteena_a(mem_wstrb),
-        .q_a(ram_q)
+    sdram_controller sdram_ctrl (
+        .clk(clk_100),
+        .rst_n(rst_n),
+        
+        .addr(sdram_addr),
+        .wdata(sdram_wdata),
+        .rdata(sdram_rdata),
+        .wstrb(sdram_wstrb),
+        .valid(ram_sel && mem_valid),
+        .ready(sdram_ready),
+        
+        .DRAM_ADDR(DRAM_ADDR),
+        .DRAM_BA(DRAM_BA),
+        .DRAM_CAS_N(DRAM_CAS_N),
+        .DRAM_CKE(DRAM_CKE),
+        .DRAM_CLK(DRAM_CLK),
+        .DRAM_CS_N(DRAM_CS_N),
+        .DRAM_DQ(DRAM_DQ),
+        .DRAM_DQM(DRAM_DQM),
+        .DRAM_RAS_N(DRAM_RAS_N),
+        .DRAM_WE_N(DRAM_WE_N)
     );
-    
-    assign ram_rdata = ram_q;
 
-     // Miner MMIO Registers
-     logic [31:0] miner_rdata;
+    logic [31:0] miner_rdata;
 
     always_ff @(posedge clk_100 or negedge rst_n) begin
         if (!rst_n) begin
@@ -153,7 +178,7 @@ module risc_miner_interface (
                     8'h00: if (mem_wdata[0]) miner_start <= 1'b1;
                     8'h04: max_nonce_reg <= mem_wdata;
 
-                     8'h30: target_reg[255:224] <= mem_wdata;
+                    8'h30: target_reg[255:224] <= mem_wdata;
                     8'h34: target_reg[223:192] <= mem_wdata;
                     8'h38: target_reg[191:160] <= mem_wdata;
                     8'h3c: target_reg[159:128] <= mem_wdata;
@@ -162,7 +187,7 @@ module risc_miner_interface (
                     8'h48: target_reg[63:32] <= mem_wdata;
                     8'h4c: target_reg[31:0] <= mem_wdata;
 
-                     8'h50: header_template_reg[639:608] <= mem_wdata;
+                    8'h50: header_template_reg[639:608] <= mem_wdata;
                     8'h54: header_template_reg[607:576] <= mem_wdata;
                     8'h58: header_template_reg[575:544] <= mem_wdata;
                     8'h5c: header_template_reg[543:512] <= mem_wdata;
@@ -187,7 +212,7 @@ module risc_miner_interface (
         end
     end
 
-     always_comb begin
+    always_comb begin
         case (mem_addr[7:0])
             8'h00: miner_rdata = {28'h0, miner_exhausted, miner_found, miner_busy, 1'b0};
             8'h04: miner_rdata = max_nonce_reg;
@@ -206,8 +231,8 @@ module risc_miner_interface (
  
     always_comb begin
         if (ram_sel) begin
-            mem_rdata = ram_rdata;
-            mem_ready = mem_valid;
+            mem_rdata = sdram_rdata;
+            mem_ready = sdram_ready;
         end else if (miner_sel) begin
             mem_rdata = miner_rdata;
             mem_ready = mem_valid;
@@ -217,9 +242,186 @@ module risc_miner_interface (
         end
     end
 
-    assign leds[0] = miner_busy;
-    assign leds[1] = miner_found;
-    assign leds[2] = miner_exhausted;
-    assign leds[9:3] = nonce_out[6:0];
+    assign LEDR[0] = miner_busy;
+    assign LEDR[1] = miner_found;
+    assign LEDR[2] = miner_exhausted;
+    assign LEDR[3] = rst_n;
+    assign LEDR[4] = pll_locked;
+    assign LEDR[5] = mem_valid;
+    assign LEDR[6] = mem_ready;
+    assign LEDR[7] = ram_sel;
+    assign LEDR[17:8] = nonce_out[9:0];
+    
+    assign LEDG[7:0] = hash_out[7:0];
+    assign LEDG[8] = miner_sel;
+
+endmodule
+
+
+module sdram_controller (
+    input  logic        clk,
+    input  logic        rst_n,
+    
+    input  logic [15:0] addr,
+    input  logic [31:0] wdata,
+    output logic [31:0] rdata,
+    input  logic [3:0]  wstrb,
+    input  logic        valid,
+    output logic        ready,
+    
+    output logic [12:0] DRAM_ADDR,
+    output logic [1:0]  DRAM_BA,
+    output logic        DRAM_CAS_N,
+    output logic        DRAM_CKE,
+    output logic        DRAM_CLK,
+    output logic        DRAM_CS_N,
+    inout  wire  [15:0] DRAM_DQ,
+    output logic [1:0]  DRAM_DQM,
+    output logic        DRAM_RAS_N,
+    output logic        DRAM_WE_N
+);
+
+    assign DRAM_CLK = clk;
+    assign DRAM_CKE = 1'b1;
+    
+    typedef enum logic [3:0] {
+        INIT,
+        IDLE,
+        ACTIVATE,
+        READ,
+        READ_WAIT,
+        WRITE,
+        PRECHARGE,
+        REFRESH
+    } state_t;
+    
+    state_t state, next_state;
+    
+    logic [15:0] dq_out;
+    logic dq_oe;
+    logic [31:0] read_buffer;
+    logic [9:0] refresh_counter;
+    logic [3:0] cmd_delay;
+    
+    assign DRAM_DQ = dq_oe ? dq_out : 16'hZZZZ;
+    
+    logic [12:0] row_addr;
+    logic [9:0] col_addr;
+    logic [1:0] bank_addr;
+    
+    assign bank_addr = addr[15:14];
+    assign row_addr = {addr[13:1]};
+    assign col_addr = {addr[0], 9'b0};
+    
+    logic [3:0] cmd;
+    localparam CMD_NOP        = 4'b0111;
+    localparam CMD_ACTIVE     = 4'b0011;
+    localparam CMD_READ       = 4'b0101;
+    localparam CMD_WRITE      = 4'b0100;
+    localparam CMD_PRECHARGE  = 4'b0010;
+    localparam CMD_REFRESH    = 4'b0001;
+    localparam CMD_LOAD_MODE  = 4'b0000;
+    
+    assign {DRAM_CS_N, DRAM_RAS_N, DRAM_CAS_N, DRAM_WE_N} = cmd;
+    
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            state <= INIT;
+            cmd_delay <= 4'd0;
+            refresh_counter <= 10'd0;
+            ready <= 1'b0;
+            rdata <= 32'h0;
+            read_buffer <= 32'h0;
+        end else begin
+            state <= next_state;
+            
+            if (refresh_counter == 10'd780)
+                refresh_counter <= 10'd0;
+            else
+                refresh_counter <= refresh_counter + 1'b1;
+            
+            if (cmd_delay > 0)
+                cmd_delay <= cmd_delay - 1'b1;
+            
+            if (state == READ_WAIT && cmd_delay == 4'd1) begin
+                read_buffer <= {DRAM_DQ, DRAM_DQ};
+                rdata <= {DRAM_DQ, DRAM_DQ};
+            end
+        end
+    end
+    
+    always_comb begin
+        next_state = state;
+        cmd = CMD_NOP;
+        DRAM_ADDR = 13'h0;
+        DRAM_BA = 2'b00;
+        DRAM_DQM = 2'b00;
+        dq_out = 16'h0;
+        dq_oe = 1'b0;
+        ready = 1'b0;
+        
+        case (state)
+            INIT: begin
+                if (cmd_delay == 4'd0) begin
+                    cmd_delay = 4'd15;
+                    next_state = IDLE;
+                end
+            end
+            
+            IDLE: begin
+                ready = 1'b1;
+                if (valid) begin
+                    next_state = ACTIVATE;
+                    cmd_delay = 4'd2;
+                end else if (refresh_counter == 10'd780) begin
+                    next_state = REFRESH;
+                    cmd = CMD_REFRESH;
+                    cmd_delay = 4'd7;
+                end
+            end
+            
+            ACTIVATE: begin
+                cmd = CMD_ACTIVE;
+                DRAM_ADDR = row_addr;
+                DRAM_BA = bank_addr;
+                if (cmd_delay == 4'd0) begin
+                    next_state = (|wstrb) ? WRITE : READ;
+                end
+            end
+            
+            READ: begin
+                cmd = CMD_READ;
+                DRAM_ADDR = {3'b001, col_addr};
+                DRAM_BA = bank_addr;
+                next_state = READ_WAIT;
+                cmd_delay = 4'd3;
+            end
+            
+            READ_WAIT: begin
+                if (cmd_delay == 4'd0) begin
+                    next_state = IDLE;
+                    ready = 1'b1;
+                end
+            end
+            
+            WRITE: begin
+                cmd = CMD_WRITE;
+                DRAM_ADDR = {3'b001, col_addr};
+                DRAM_BA = bank_addr;
+                DRAM_DQM = ~wstrb[1:0];
+                dq_out = wdata[15:0];
+                dq_oe = 1'b1;
+                next_state = IDLE;
+                cmd_delay = 4'd2;
+            end
+            
+            REFRESH: begin
+                if (cmd_delay == 4'd0)
+                    next_state = IDLE;
+            end
+            
+            default: next_state = IDLE;
+        endcase
+    end
 
 endmodule
